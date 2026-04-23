@@ -10,7 +10,7 @@ function App() {
     const fetchMessage = async () => {
       try {
         setLoading(true)
-        const response = await fetch('http://localhost:8080/hello')
+        const response = await fetch('http://localhost:8080/')
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`)
         }
