@@ -35,6 +35,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(org.springframework.security.config.http.SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers("/api/admin/**").hasRole("admin")
                         .requestMatchers("/admin/**").hasRole("admin")
                         .requestMatchers("/retros/**").hasAnyRole("mob", "admin")
                         .anyRequest().permitAll())
