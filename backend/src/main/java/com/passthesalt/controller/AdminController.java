@@ -1,5 +1,6 @@
 package com.passthesalt.controller;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,12 +26,14 @@ public class AdminController {
     }
 
     @PutMapping("/mob-groups/{mobGroupId}/users/{userId}")
-    public AdminDTO assignUserToMobGroup(@PathVariable Long mobGroupId, @PathVariable Long userId) {
-        return adminService.assignUserToMobGroup(mobGroupId, userId);
+    public ResponseEntity<AdminDTO> assignUserToMobGroup(@PathVariable Long mobGroupId, @PathVariable Long userId) {
+        AdminDTO result = adminService.assignUserToMobGroup(mobGroupId, userId);
+        return ResponseEntity.ok(result);
     }
 
     @PutMapping("/mob-groups/{mobGroupId}/name")
-    public AdminDTO renameMobGroup(@PathVariable Long mobGroupId, @Valid @RequestBody AdminDTO request) {
-        return adminService.renameMobGroup(mobGroupId, request.mobGroupName());
+    public ResponseEntity<AdminDTO> renameMobGroup(@PathVariable Long mobGroupId, @Valid @RequestBody AdminDTO request) {
+        AdminDTO result = adminService.renameMobGroup(mobGroupId, request.mobGroupName());
+        return ResponseEntity.ok(result);
     }
 }
