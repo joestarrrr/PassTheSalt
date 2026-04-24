@@ -36,6 +36,13 @@ export function LoginPage() {
 
           <div className="mt-6 space-y-4">
             <Link
+              to="/user/afterwork-events"
+              className="inline-flex w-full items-center justify-center rounded-full bg-violet-600 px-6 py-4 text-base font-semibold text-white shadow-lg shadow-violet-300/50 transition duration-200 hover:-translate-y-0.5 hover:bg-violet-500 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-violet-300/60"
+            >
+              Continue as User
+            </Link>
+
+            <Link
               to="/"
               className="inline-flex w-full items-center justify-center rounded-full border border-violet-200 bg-white px-6 py-4 text-base font-semibold text-violet-700 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-violet-300 hover:bg-violet-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-violet-300/60"
             >

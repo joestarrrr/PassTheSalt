@@ -1,6 +1,15 @@
 import { useState, type FormEvent } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { createAfterworkEvent, deleteAfterworkEvent, getAfterworkEvents, updateAfterworkEvent } from '../api.js'
+import {
+  createAfterworkEvent,
+  createUserAfterworkEvent,
+  deleteAfterworkEvent,
+  deleteUserAfterworkEvent,
+  getAfterworkEvents,
+  getUserAfterworkEvents,
+  updateAfterworkEvent,
+  updateUserAfterworkEvent,
+} from '../api.js'
 import { SectionCard } from './SectionCard'
 
 type EventItem = {
@@ -19,6 +28,8 @@ type AfterworkEventResponse = {
   createdByUserId: number
 }
 
+type ApiScope = 'admin' | 'user'
+
 function formatDateForUi(dateValue: string) {
   const date = new Date(`${dateValue}T00:00:00`)
   return Number.isNaN(date.getTime())
@@ -36,7 +47,7 @@ function mapEventForUi(event: AfterworkEventResponse): EventItem {
   }
 }
 
-export function AfterworkEventsManagement() {
+export function AfterworkEventsManagement({ apiScope = 'admin' }: { apiScope?: ApiScope }) {
   const queryClient = useQueryClient()
   const [name, setName] = useState('')
   const [date, setDate] = useState('')
@@ -45,19 +56,34 @@ export function AfterworkEventsManagement() {
   const [editDate, setEditDate] = useState('')
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
 
+  const api =
+    apiScope === 'admin'
+      ? {
+          getAfterworkEvents,
+          createAfterworkEvent,
+          updateAfterworkEvent,
+          deleteAfterworkEvent,
+        }
+      : {
+          getAfterworkEvents: getUserAfterworkEvents,
+          createAfterworkEvent: createUserAfterworkEvent,
+          updateAfterworkEvent: updateUserAfterworkEvent,
+          deleteAfterworkEvent: deleteUserAfterworkEvent,
+        }
+
   const eventsQuery = useQuery({
-    queryKey: ['afterwork-events'],
-    queryFn: () => getAfterworkEvents() as Promise<AfterworkEventResponse[]>,
+    queryKey: ['afterwork-events', apiScope],
+    queryFn: () => api.getAfterworkEvents() as Promise<AfterworkEventResponse[]>,
   })
 
   const createMutation = useMutation({
     mutationFn: (variables: { title: string; eventDate: string }) =>
-      createAfterworkEvent({
+      api.createAfterworkEvent({
         title: variables.title,
         eventDate: variables.eventDate,
       }) as Promise<AfterworkEventResponse>,
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ['afterwork-events'] })
+      void queryClient.invalidateQueries({ queryKey: ['afterwork-events', apiScope] })
       setName('')
       setDate('')
       setFeedback({ type: 'success', message: 'Afterwork event created.' })
@@ -69,12 +95,12 @@ export function AfterworkEventsManagement() {
 
   const updateMutation = useMutation({
     mutationFn: (variables: { eventId: number; title: string; eventDate: string }) =>
-      updateAfterworkEvent(variables.eventId, {
+      api.updateAfterworkEvent(variables.eventId, {
         title: variables.title,
         eventDate: variables.eventDate,
       }) as Promise<AfterworkEventResponse>,
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ['afterwork-events'] })
+      void queryClient.invalidateQueries({ queryKey: ['afterwork-events', apiScope] })
       setEditingEventId(null)
       setEditName('')
       setEditDate('')
@@ -86,9 +112,9 @@ export function AfterworkEventsManagement() {
   })
 
   const deleteMutation = useMutation({
-    mutationFn: (eventId: number) => deleteAfterworkEvent(eventId),
+    mutationFn: (eventId: number) => api.deleteAfterworkEvent(eventId),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ['afterwork-events'] })
+      void queryClient.invalidateQueries({ queryKey: ['afterwork-events', apiScope] })
       setFeedback({ type: 'success', message: 'Afterwork event deleted.' })
     },
     onError: (error) => {

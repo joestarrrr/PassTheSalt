@@ -7,6 +7,7 @@ import { Route as AdminMobGroupsRouteImport } from './routes/admin.mob-groups'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as UserAfterworkEventsRouteImport } from './routes/user.afterwork-events'
 
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
@@ -53,6 +54,12 @@ const IndexRoute = IndexRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+
+const UserAfterworkEventsRoute = UserAfterworkEventsRouteImport.update({
+  id: '/user/afterwork-events',
+  path: '/user/afterwork-events',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -114,6 +121,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/user/afterwork-events': {
+      id: '/user/afterwork-events'
+      path: '/user/afterwork-events'
+      fullPath: '/user/afterwork-events'
+      preLoaderRoute: typeof UserAfterworkEventsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -126,4 +140,5 @@ export const routeTree = rootRouteImport._addFileChildren({
   AdminUsersRoute,
   IndexRoute,
   LoginRoute,
+  UserAfterworkEventsRoute,
 })

@@ -72,3 +72,40 @@ export const deleteAfterworkEvent = async (eventId) => {
 
   return parseResponse(response, 'Failed to delete afterwork event')
 }
+
+export const getUserAfterworkEvents = async () => {
+  const response = await fetch('/api/users/afterwork-events')
+  return parseResponse(response, 'Failed to load user afterwork events')
+}
+
+export const createUserAfterworkEvent = async ({ title, eventDate, location = 'TBD', createdByUserId = 1 }) => {
+  const response = await fetch('/api/users/afterwork-events', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ title, eventDate, location, createdByUserId }),
+  })
+
+  return parseResponse(response, 'Failed to create user afterwork event')
+}
+
+export const updateUserAfterworkEvent = async (eventId, { title, eventDate, location = 'TBD', createdByUserId = 1 }) => {
+  const response = await fetch(`/api/users/afterwork-events/${eventId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ title, eventDate, location, createdByUserId }),
+  })
+
+  return parseResponse(response, 'Failed to update user afterwork event')
+}
+
+export const deleteUserAfterworkEvent = async (eventId) => {
+  const response = await fetch(`/api/users/afterwork-events/${eventId}`, {
+    method: 'DELETE',
+  })
+
+  return parseResponse(response, 'Failed to delete user afterwork event')
+}
