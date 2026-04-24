@@ -1,35 +1,34 @@
 package com.passthesalt.service;
 
-import java.util.List;
-import java.util.Locale;
-
 import org.springframework.stereotype.Service;
 
+import com.passthesalt.dto.UserDTO;
 import com.passthesalt.exception.ResourceNotFoundException;
-import com.passthesalt.model.User;
+import com.passthesalt.model.AfterworkEvent;
+import com.passthesalt.repository.AfterworkEventRepository;
 import com.passthesalt.repository.UserRepository;
 
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final AfterworkEventRepository afterworkEventRepository;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, AfterworkEventRepository afterworkEventRepository) {
         this.userRepository = userRepository;
+        this.afterworkEventRepository = afterworkEventRepository;
     }
 
-    public List<User> getAll() {
-        return userRepository.findAll();
-    }
+    public UserDTO createAfterworkEvent(UserDTO request) {
+        userRepository.findById(request.createdByUserId())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id " + request.createdByUserId()));
 
-    public User create(User user) {
-        user.setId(null);
-        user.setRole(user.getRole().toLowerCase(Locale.ROOT));
-        return userRepository.save(user);
-    }
+        AfterworkEvent event = afterworkEventRepository.save(new AfterworkEvent(
+                null,
+                request.title(),
+                request.location(),
+                request.eventDate(),
+                request.createdByUserId()));
 
-    public void delete(Long id) {
-        if (!userRepository.deleteById(id)) {
-            throw new ResourceNotFoundException("User not found with id " + id);
-        }
+        return new UserDTO(event.id(), event.title(), event.location(), event.eventDate(), event.createdByUserId());
     }
 }

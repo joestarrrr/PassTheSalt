@@ -1,33 +1,43 @@
 package com.passthesalt.service;
 
-import java.util.List;
+import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Service;
 
+import com.passthesalt.dto.MobGroupDTO;
 import com.passthesalt.exception.ResourceNotFoundException;
-import com.passthesalt.model.MobGroup;
+import com.passthesalt.model.MobGroupFormSubmission;
 import com.passthesalt.repository.MobGroupRepository;
+import com.passthesalt.repository.MobGroupFormSubmissionRepository;
+import com.passthesalt.repository.UserRepository;
 
 @Service
 public class MobGroupService {
     private final MobGroupRepository mobGroupRepository;
+    private final UserRepository userRepository;
+    private final MobGroupFormSubmissionRepository formSubmissionRepository;
 
-    public MobGroupService(MobGroupRepository mobGroupRepository) {
+    public MobGroupService(MobGroupRepository mobGroupRepository, UserRepository userRepository,
+            MobGroupFormSubmissionRepository formSubmissionRepository) {
         this.mobGroupRepository = mobGroupRepository;
+        this.userRepository = userRepository;
+        this.formSubmissionRepository = formSubmissionRepository;
     }
 
-    public List<MobGroup> getAll() {
-        return mobGroupRepository.findAll();
-    }
+    public MobGroupDTO submitForm(MobGroupDTO request) {
+        mobGroupRepository.findById(request.mobGroupId())
+                .orElseThrow(() -> new ResourceNotFoundException("Mob group not found with id " + request.mobGroupId()));
+        userRepository.findById(request.submittedByUserId())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id " + request.submittedByUserId()));
 
-    public MobGroup create(MobGroup mobGroup) {
-        mobGroup.setId(null);
-        return mobGroupRepository.save(mobGroup);
-    }
+        MobGroupFormSubmission saved = formSubmissionRepository.save(new MobGroupFormSubmission(
+                null,
+                request.mobGroupId(),
+                request.submittedByUserId(),
+                request.formContent(),
+                LocalDateTime.now()));
 
-    public void delete(Long id) {
-        if (!mobGroupRepository.deleteById(id)) {
-            throw new ResourceNotFoundException("Mob group not found with id " + id);
-        }
+        return new MobGroupDTO(saved.id(), saved.mobGroupId(), saved.submittedByUserId(), saved.formContent(),
+                saved.submittedAt());
     }
 }

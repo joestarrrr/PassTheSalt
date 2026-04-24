@@ -1,30 +1,19 @@
 package com.passthesalt.controller;
 
-import java.util.List;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.passthesalt.dto.request.CreateMobGroupRequest;
-import com.passthesalt.dto.response.MobGroupResponse;
-import com.passthesalt.model.MobGroup;
+import com.passthesalt.dto.MobGroupDTO;
 import com.passthesalt.service.MobGroupService;
 
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/admin/mob-groups")
+@RequestMapping("/retros/forms")
 @Validated
-@PreAuthorize("hasRole('admin')")
+//@PreAuthorize("hasAnyRole('mob', 'admin')")
 public class MobGroupController {
     private final MobGroupService mobGroupService;
 
@@ -33,26 +22,13 @@ public class MobGroupController {
     }
 
     @GetMapping
-    public List<MobGroupResponse> getMobGroups() {
-        return mobGroupService.getAll().stream()
-                .map(this::toResponse)
-                .toList();
+    public String getAllMobGroups() {
+        return ("hi");
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public MobGroupResponse createMobGroup(@Valid @RequestBody CreateMobGroupRequest request) {
-        MobGroup mobGroup = new MobGroup(null, request.getName(), request.getDescription());
-        return toResponse(mobGroupService.create(mobGroup));
-    }
-
-    @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteMobGroup(@PathVariable Long id) {
-        mobGroupService.delete(id);
-    }
-
-    private MobGroupResponse toResponse(MobGroup mobGroup) {
-        return new MobGroupResponse(mobGroup.getId(), mobGroup.getName(), mobGroup.getDescription());
+    public MobGroupDTO submitForm(@Valid @RequestBody MobGroupDTO request) {
+        return mobGroupService.submitForm(request);
     }
 }
