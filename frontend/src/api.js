@@ -37,12 +37,12 @@ export const renameMobGroup = async (mobGroupId, mobGroupName) => {
 }
 
 export const getAfterworkEvents = async () => {
-  const response = await fetch('/api/admin/afterwork-events')
+  const response = await fetch('/api/afterwork-events')
   return parseResponse(response, 'Failed to load afterwork events')
 }
 
 export const createAfterworkEvent = async ({ title, eventDate, location = 'TBD', createdByUserId = 1 }) => {
-  const response = await fetch('/api/admin/afterwork-events', {
+  const response = await fetch('/api/afterwork-events', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -54,7 +54,7 @@ export const createAfterworkEvent = async ({ title, eventDate, location = 'TBD',
 }
 
 export const updateAfterworkEvent = async (eventId, { title, eventDate, location = 'TBD', createdByUserId = 1 }) => {
-  const response = await fetch(`/api/admin/afterwork-events/${eventId}`, {
+  const response = await fetch(`/api/afterwork-events/${eventId}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -66,7 +66,7 @@ export const updateAfterworkEvent = async (eventId, { title, eventDate, location
 }
 
 export const deleteAfterworkEvent = async (eventId) => {
-  const response = await fetch(`/api/admin/afterwork-events/${eventId}`, {
+  const response = await fetch(`/api/afterwork-events/${eventId}`, {
     method: 'DELETE',
   })
 
@@ -74,12 +74,12 @@ export const deleteAfterworkEvent = async (eventId) => {
 }
 
 export const getUserAfterworkEvents = async () => {
-  const response = await fetch('/api/users/afterwork-events')
+  const response = await fetch('/api/afterwork-events')
   return parseResponse(response, 'Failed to load user afterwork events')
 }
 
 export const createUserAfterworkEvent = async ({ title, eventDate, location = 'TBD', createdByUserId = 1 }) => {
-  const response = await fetch('/api/users/afterwork-events', {
+  const response = await fetch('/api/afterwork-events', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -91,7 +91,7 @@ export const createUserAfterworkEvent = async ({ title, eventDate, location = 'T
 }
 
 export const updateUserAfterworkEvent = async (eventId, { title, eventDate, location = 'TBD', createdByUserId = 1 }) => {
-  const response = await fetch(`/api/users/afterwork-events/${eventId}`, {
+  const response = await fetch(`/api/afterwork-events/${eventId}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -103,7 +103,7 @@ export const updateUserAfterworkEvent = async (eventId, { title, eventDate, loca
 }
 
 export const deleteUserAfterworkEvent = async (eventId) => {
-  const response = await fetch(`/api/users/afterwork-events/${eventId}`, {
+  const response = await fetch(`/api/afterwork-events/${eventId}`, {
     method: 'DELETE',
   })
 
@@ -112,7 +112,7 @@ export const deleteUserAfterworkEvent = async (eventId) => {
 
 // Course Management API
 export const createCourse = async ({ name, numberOfDays, startDate }) => {
-  const response = await fetch('/api/admin/courses', {
+  const response = await fetch('/api/courses', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -124,23 +124,23 @@ export const createCourse = async ({ name, numberOfDays, startDate }) => {
 }
 
 export const getCourses = async () => {
-  const response = await fetch('/api/admin/courses')
+  const response = await fetch('/api/courses')
   return parseResponse(response, 'Failed to load courses')
 }
 
 export const getCourseById = async (courseId) => {
-  const response = await fetch(`/api/admin/courses/${courseId}`)
+  const response = await fetch(`/api/courses/${courseId}`)
   return parseResponse(response, 'Failed to load course')
 }
 
 export const getCourseDays = async (courseId) => {
-  const response = await fetch(`/api/admin/courses/${courseId}/days`)
+  const response = await fetch(`/api/courses/${courseId}/days`)
   return parseResponse(response, 'Failed to load course days')
 }
 
 // Mob Group Management API
 export const createMobGroup = async ({ courseId, name, description }) => {
-  const response = await fetch('/api/admin/mob-groups', {
+  const response = await fetch('/api/mob-groups', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -151,9 +151,20 @@ export const createMobGroup = async ({ courseId, name, description }) => {
   return parseResponse(response, 'Failed to create mob group')
 }
 
+export const getMobGroupsForCourse = async (courseId) => {
+  const response = await fetch(`/api/courses/${courseId}/mob-groups`)
+  return parseResponse(response, 'Failed to load mob groups for course')
+}
+
+export const getAdminUsers = async (courseId) => {
+  const query = courseId ? `?courseId=${courseId}` : ''
+  const response = await fetch(`/api/users${query}`)
+  return parseResponse(response, 'Failed to load users')
+}
+
 // User Assignment API
 export const assignUserToCourse = async ({ userId, courseId }) => {
-  const response = await fetch('/api/admin/assign-user-to-course', {
+  const response = await fetch('/api/users/assign-course', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -165,7 +176,7 @@ export const assignUserToCourse = async ({ userId, courseId }) => {
 }
 
 export const assignUserToMobGroupNew = async ({ userId, mobGroupId }) => {
-  const response = await fetch('/api/admin/assign-user-to-mobgroup', {
+  const response = await fetch('/api/users/assign-mob-group', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -174,6 +185,11 @@ export const assignUserToMobGroupNew = async ({ userId, mobGroupId }) => {
   })
 
   return parseResponse(response, 'Failed to assign user to mob group')
+}
+
+export const getUserCourseContext = async (userId) => {
+  const response = await fetch(`/api/users/${userId}/course-context`)
+  return parseResponse(response, 'Failed to load user course context')
 }
 
 // Retro API

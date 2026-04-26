@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { getCourseDays, submitRetro } from '../api'
+import { getUserCourseContext, submitRetro } from '../api'
 
 type CourseDay = {
   id: number
@@ -25,6 +25,15 @@ type RetroInput = {
   lectureName: string | null
 }
 
+type UserCourseContext = {
+  userId: number
+  courseId: number
+  courseName: string
+  mobGroupId: number | null
+  mobGroupName: string | null
+  courseDays: CourseDay[]
+}
+
 export function UserCourseRetroPage() {
   const queryClient = useQueryClient()
   const [selectedDayId, setSelectedDayId] = useState<number | null>(null)
@@ -36,17 +45,12 @@ export function UserCourseRetroPage() {
   const [rating, setRating] = useState<number>(3)
   const [lectureName, setLectureName] = useState('')
   const [feedback, setFeedback] = useState<Feedback>(null)
+  const [userId, setUserId] = useState<number>(1)
 
-  // For now, using hardcoded courseId=1, userId=1, mobGroupId=1
-  // In production, these would come from auth/context
-  const courseId = 1
-  const userId = 1
-  const mobGroupId = 1
-
-  const daysQuery = useQuery<CourseDay[]>({
-    queryKey: ['course-days', courseId],
-    queryFn: () => getCourseDays(courseId) as Promise<CourseDay[]>,
-    enabled: !!courseId,
+  const userContextQuery = useQuery<UserCourseContext>({
+    queryKey: ['user-course-context', userId],
+    queryFn: () => getUserCourseContext(userId) as Promise<UserCourseContext>,
+    enabled: Boolean(userId),
   })
 
   const submitMutation = useMutation<unknown, Error, RetroInput>({
@@ -71,15 +75,15 @@ export function UserCourseRetroPage() {
   const handleSubmitRetro = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    if (!selectedDayId || !startOfDay.trim()) {
+    if (!selectedDayId || !startOfDay.trim() || !userContextQuery.data?.courseId || !userContextQuery.data?.mobGroupId) {
       setFeedback({ type: 'error', message: 'Please select a day and add a start-of-day note' })
       return
     }
 
     const retroData: RetroInput = {
-      courseId,
+      courseId: userContextQuery.data.courseId,
       courseDayId: selectedDayId,
-      mobGroupId,
+      mobGroupId: userContextQuery.data.mobGroupId,
       userId,
       startOfDay,
       workedWell: workedWell || null,
@@ -102,6 +106,22 @@ export function UserCourseRetroPage() {
           <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-600 sm:text-base">
             Share your daily reflections, what worked well, what you learned, and areas for improvement.
           </p>
+
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <label className="block">
+              <span className="mb-1 block text-sm font-medium text-slate-700">User ID</span>
+              <input
+                type="number"
+                value={userId}
+                onChange={(e) => setUserId(Number(e.target.value))}
+                className="w-full rounded-2xl border border-violet-200 bg-white px-4 py-2 text-sm outline-none focus:border-violet-400"
+              />
+            </label>
+            <div className="rounded-2xl border border-violet-100 bg-violet-50/70 px-4 py-2 text-sm text-slate-700">
+              <p>Course: {userContextQuery.data?.courseName ?? 'Not assigned'}</p>
+              <p>Mob Group: {userContextQuery.data?.mobGroupName ?? 'Not assigned'}</p>
+            </div>
+          </div>
         </header>
 
         <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
@@ -109,13 +129,13 @@ export function UserCourseRetroPage() {
           <div className="rounded-3xl border border-slate-100 bg-white/80 p-4 sm:p-5">
             <h3 className="text-lg font-bold text-slate-900">Course Days</h3>
 
-            {daysQuery.isLoading ? (
+            {userContextQuery.isLoading ? (
               <p className="mt-4 text-sm text-slate-600">Loading course days...</p>
-            ) : (daysQuery.data ?? []).length === 0 ? (
+            ) : (userContextQuery.data?.courseDays ?? []).length === 0 ? (
               <p className="mt-4 text-sm text-slate-600">No course days available</p>
             ) : (
               <div className="mt-4 space-y-2">
-                {(daysQuery.data ?? []).map((day) => (
+                {(userContextQuery.data?.courseDays ?? []).map((day) => (
                   <button
                     onClick={() => {
                       setSelectedDayId(day.id)
