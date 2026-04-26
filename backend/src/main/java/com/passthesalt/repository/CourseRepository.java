@@ -1,12 +1,12 @@
 package com.passthesalt.repository;
 
-import com.passthesalt.model.MobGroup;
+import com.passthesalt.model.Course;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public interface MobGroupRepository extends JpaRepository<MobGroup, Long> {
-    List<MobGroup> findByCourseId(Long courseId);
+public interface CourseRepository extends JpaRepository<Course, Long> {
+    List<Course> findAll();
 }

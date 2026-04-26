@@ -1,23 +1,24 @@
 package com.passthesalt.model;
 
 import jakarta.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "mob_groups")
-public class MobGroup {
+@Table(name = "courses")
+public class Course {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
-    private Long courseId;
-
-    @Column(nullable = false)
     private String name;
 
-    @Column
-    private String description;
+    @Column(nullable = false)
+    private Integer numberOfDays;
+
+    @Column(nullable = false)
+    private LocalDate startDate;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -28,13 +29,13 @@ public class MobGroup {
     }
 
     // Constructors
-    public MobGroup() {
+    public Course() {
     }
 
-    public MobGroup(Long courseId, String name, String description) {
-        this.courseId = courseId;
+    public Course(String name, Integer numberOfDays, LocalDate startDate) {
         this.name = name;
-        this.description = description;
+        this.numberOfDays = numberOfDays;
+        this.startDate = startDate;
     }
 
     // Getters and Setters
@@ -46,14 +47,6 @@ public class MobGroup {
         this.id = id;
     }
 
-    public Long getCourseId() {
-        return courseId;
-    }
-
-    public void setCourseId(Long courseId) {
-        this.courseId = courseId;
-    }
-
     public String getName() {
         return name;
     }
@@ -62,12 +55,20 @@ public class MobGroup {
         this.name = name;
     }
 
-    public String getDescription() {
-        return description;
+    public Integer getNumberOfDays() {
+        return numberOfDays;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setNumberOfDays(Integer numberOfDays) {
+        this.numberOfDays = numberOfDays;
+    }
+
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
     }
 
     public LocalDateTime getCreatedAt() {
