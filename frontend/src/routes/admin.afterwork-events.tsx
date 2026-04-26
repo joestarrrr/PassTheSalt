@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { AfterworkEventsManagement } from '../pages/AfterworkEventsManagement'
+import { AfterworkEventsManagementPage } from '../pages/AfterworkEventsManagementPage'
 
 export const Route = createFileRoute('/admin/afterwork-events')({
-  component: AfterworkEventsManagement,
+  component: AfterworkEventsManagementPage,
 })

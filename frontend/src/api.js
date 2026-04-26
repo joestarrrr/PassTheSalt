@@ -109,3 +109,97 @@ export const deleteUserAfterworkEvent = async (eventId) => {
 
   return parseResponse(response, 'Failed to delete user afterwork event')
 }
+
+// Course Management API
+export const createCourse = async ({ name, numberOfDays, startDate }) => {
+  const response = await fetch('/api/admin/courses', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ name, numberOfDays, startDate }),
+  })
+
+  return parseResponse(response, 'Failed to create course')
+}
+
+export const getCourses = async () => {
+  const response = await fetch('/api/admin/courses')
+  return parseResponse(response, 'Failed to load courses')
+}
+
+export const getCourseById = async (courseId) => {
+  const response = await fetch(`/api/admin/courses/${courseId}`)
+  return parseResponse(response, 'Failed to load course')
+}
+
+export const getCourseDays = async (courseId) => {
+  const response = await fetch(`/api/admin/courses/${courseId}/days`)
+  return parseResponse(response, 'Failed to load course days')
+}
+
+// Mob Group Management API
+export const createMobGroup = async ({ courseId, name, description }) => {
+  const response = await fetch('/api/admin/mob-groups', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ courseId, name, description }),
+  })
+
+  return parseResponse(response, 'Failed to create mob group')
+}
+
+// User Assignment API
+export const assignUserToCourse = async ({ userId, courseId }) => {
+  const response = await fetch('/api/admin/assign-user-to-course', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ userId, courseId }),
+  })
+
+  return parseResponse(response, 'Failed to assign user to course')
+}
+
+export const assignUserToMobGroupNew = async ({ userId, mobGroupId }) => {
+  const response = await fetch('/api/admin/assign-user-to-mobgroup', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ userId, mobGroupId }),
+  })
+
+  return parseResponse(response, 'Failed to assign user to mob group')
+}
+
+// Retro API
+export const submitRetro = async (retroData) => {
+  const response = await fetch('/api/retros', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(retroData),
+  })
+
+  return parseResponse(response, 'Failed to submit retro')
+}
+
+export const getRetrosByCourse = async (courseId) => {
+  const response = await fetch(`/api/retros/course/${courseId}`)
+  return parseResponse(response, 'Failed to load retros')
+}
+
+export const getRetrosByCourseDay = async (courseDayId) => {
+  const response = await fetch(`/api/retros/course-day/${courseDayId}`)
+  return parseResponse(response, 'Failed to load retros')
+}
+
+export const getRetrosByCourseDayAndMobGroup = async (courseDayId, mobGroupId) => {
+  const response = await fetch(`/api/retros/course-day/${courseDayId}/mob-group/${mobGroupId}`)
+  return parseResponse(response, 'Failed to load retros')
+}

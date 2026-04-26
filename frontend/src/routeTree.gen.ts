@@ -3,10 +3,13 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AdminAnonymousQuestionsRouteImport } from './routes/admin.anonymous-questions'
 import { Route as AdminAfterworkEventsRouteImport } from './routes/admin.afterwork-events'
 import { Route as AdminClassMoodRouteImport } from './routes/admin.class-mood'
+import { Route as AdminCoursesRouteImport } from './routes/admin.courses'
 import { Route as AdminMobGroupsRouteImport } from './routes/admin.mob-groups'
+import { Route as AdminMobGroupsManageRouteImport } from './routes/admin.mob-groups-manage'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as UserCourseRouteImport } from './routes/user.course'
 import { Route as UserAfterworkEventsRouteImport } from './routes/user.afterwork-events'
 
 const AdminRoute = AdminRouteImport.update({
@@ -33,9 +36,21 @@ const AdminClassMoodRoute = AdminClassMoodRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 
+const AdminCoursesRoute = AdminCoursesRouteImport.update({
+  id: '/admin/courses',
+  path: '/admin/courses',
+  getParentRoute: () => rootRouteImport,
+} as any)
+
 const AdminMobGroupsRoute = AdminMobGroupsRouteImport.update({
   id: '/admin/mob-groups',
   path: '/admin/mob-groups',
+  getParentRoute: () => rootRouteImport,
+} as any)
+
+const AdminMobGroupsManageRoute = AdminMobGroupsManageRouteImport.update({
+  id: '/admin/mob-groups-manage',
+  path: '/admin/mob-groups-manage',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -54,6 +69,12 @@ const IndexRoute = IndexRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+
+const UserCourseRoute = UserCourseRouteImport.update({
+  id: '/user/course',
+  path: '/user/course',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -93,11 +114,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminClassMoodRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/courses': {
+      id: '/admin/courses'
+      path: '/admin/courses'
+      fullPath: '/admin/courses'
+      preLoaderRoute: typeof AdminCoursesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/mob-groups': {
       id: '/admin/mob-groups'
       path: '/admin/mob-groups'
       fullPath: '/admin/mob-groups'
       preLoaderRoute: typeof AdminMobGroupsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/mob-groups-manage': {
+      id: '/admin/mob-groups-manage'
+      path: '/admin/mob-groups-manage'
+      fullPath: '/admin/mob-groups-manage'
+      preLoaderRoute: typeof AdminMobGroupsManageRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/users': {
@@ -128,6 +163,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UserAfterworkEventsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/user/course': {
+      id: '/user/course'
+      path: '/user/course'
+      fullPath: '/user/course'
+      preLoaderRoute: typeof UserCourseRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -136,9 +178,12 @@ export const routeTree = rootRouteImport._addFileChildren({
   AdminAnonymousQuestionsRoute,
   AdminAfterworkEventsRoute,
   AdminClassMoodRoute,
+  AdminCoursesRoute,
   AdminMobGroupsRoute,
+  AdminMobGroupsManageRoute,
   AdminUsersRoute,
   IndexRoute,
   LoginRoute,
+  UserCourseRoute,
   UserAfterworkEventsRoute,
 })

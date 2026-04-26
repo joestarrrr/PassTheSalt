@@ -1,9 +1,10 @@
-import { AnonymousQuestions } from './AnonymousQuestions'
-import { AfterworkEventsManagement } from './AfterworkEventsManagement'
-import { ClassMoodGraph } from './ClassMoodGraph'
-import { MobGroupsManagement } from './MobGroupsManagement'
-import { SummaryCard } from './SummaryCard'
-import { UserManagement } from './UserManagement'
+import { AnonymousQuestions } from '../components/AnonymousQuestions'
+import { AfterworkEventsManagement } from '../components/AfterworkEventsManagement'
+import { ClassMoodGraph } from '../components/ClassMoodGraph'
+import { MobGroupsManagement } from '../components/MobGroupsManagement'
+import { SummaryCard } from '../components/SummaryCard'
+import { UserManagement } from '../components/UserManagement'
+import { Link } from '@tanstack/react-router'
 
 const summaryCards = [
   { label: 'Class Mood', value: '4.2/5' },
@@ -32,6 +33,35 @@ export function AdminDashboard() {
           {summaryCards.map((card) => (
             <SummaryCard key={card.label} label={card.label} value={card.value} />
           ))}
+        </section>
+
+        <section className="grid gap-4 sm:grid-cols-3">
+          <Link
+            to="/admin/courses"
+            className="rounded-3xl border border-violet-100 bg-white/80 p-5 shadow-sm backdrop-blur-sm hover:border-violet-200 hover:shadow-md transition-all"
+          >
+            <p className="text-xs font-semibold uppercase tracking-[0.35em] text-violet-500/90">Management</p>
+            <p className="mt-2 font-semibold text-slate-900">Manage Courses</p>
+            <p className="mt-1 text-sm text-slate-600">Create courses and generate daily pages</p>
+          </Link>
+
+          <Link
+            to="/admin/mob-groups-manage"
+            className="rounded-3xl border border-violet-100 bg-white/80 p-5 shadow-sm backdrop-blur-sm hover:border-violet-200 hover:shadow-md transition-all"
+          >
+            <p className="text-xs font-semibold uppercase tracking-[0.35em] text-violet-500/90">Management</p>
+            <p className="mt-2 font-semibold text-slate-900">Create Mob Groups</p>
+            <p className="mt-1 text-sm text-slate-600">Organize students into groups</p>
+          </Link>
+
+          <Link
+            to="/user/course"
+            className="rounded-3xl border border-violet-100 bg-white/80 p-5 shadow-sm backdrop-blur-sm hover:border-violet-200 hover:shadow-md transition-all"
+          >
+            <p className="text-xs font-semibold uppercase tracking-[0.35em] text-violet-500/90">Preview</p>
+            <p className="mt-2 font-semibold text-slate-900">View Retro Page</p>
+            <p className="mt-1 text-sm text-slate-600">See the retro submission form</p>
+          </Link>
         </section>
 
         <ClassMoodGraph />

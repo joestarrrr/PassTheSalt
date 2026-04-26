@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { MobGroupsManagement } from '../pages/MobGroupsManagement'
+import { MobGroupsManagementPage } from '../pages/MobGroupsManagementPage'
 
 export const Route = createFileRoute('/admin/mob-groups')({
-  component: MobGroupsManagement,
+  component: MobGroupsManagementPage,
 })
