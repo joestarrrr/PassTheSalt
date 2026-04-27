@@ -27,7 +27,7 @@ public class MobGroup {
         createdAt = LocalDateTime.now();
     }
 
-    // Constructors
+
     public MobGroup() {
     }
 
