@@ -11,6 +11,7 @@ import {
   updateUserAfterworkEvent,
 } from '../api.js'
 import { SectionCard } from './SectionCard'
+import { MapboxMap } from './MapboxMap'
 
 type EventItem = {
   id: number
@@ -162,7 +163,8 @@ export function AfterworkEventsManagement({ apiScope = 'admin' }: { apiScope?: A
 
   return (
     <SectionCard label="Afterwork Events" title="Afterwork Events Management">
-      <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
+      <div className="space-y-6">
+        <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
         <form onSubmit={handleAddEvent} className="rounded-3xl border border-violet-100 bg-violet-50/70 p-5">
           <h3 className="text-lg font-bold text-slate-900">Add New Event</h3>
 
@@ -270,6 +272,14 @@ export function AfterworkEventsManagement({ apiScope = 'admin' }: { apiScope?: A
               </div>
             </div>
           ))}
+        </div>
+        </div>
+
+        <div className="mt-6">
+          <h3 className="mb-4 text-lg font-bold text-slate-900">Event Locations & Voting</h3>
+          <div className="h-96 rounded-3xl border border-slate-100 overflow-hidden">
+            <MapboxMap />
+          </div>
         </div>
       </div>
     </SectionCard>

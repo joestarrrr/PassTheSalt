@@ -1,0 +1,12 @@
+export type Course = {
+  id: number
+  name: string
+  numberOfDays: number
+  startDate: string
+}
+
+export type CreateCourseInput = {
+  name: string
+  numberOfDays: number
+  startDate: string
+}
