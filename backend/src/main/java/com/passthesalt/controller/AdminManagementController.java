@@ -2,7 +2,6 @@ package com.passthesalt.controller;
 
 import com.passthesalt.dto.*;
 import com.passthesalt.service.UserAssignmentService;
-import com.passthesalt.service.CourseService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,26 +12,25 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/admin")
+@RequestMapping("/api")
 @Validated
-@PreAuthorize("hasRole('admin')")
 public class AdminManagementController {
     private final UserAssignmentService userAssignmentService;
-    private final CourseService courseService;
 
-    public AdminManagementController(UserAssignmentService userAssignmentService, CourseService courseService) {
+    public AdminManagementController(UserAssignmentService userAssignmentService) {
         this.userAssignmentService = userAssignmentService;
-        this.courseService = courseService;
     }
 
     // User assignment endpoints
-    @PostMapping("/assign-user-to-course")
+    @PostMapping("/users/assign-course")
+    @PreAuthorize("hasRole('admin')")
     public ResponseEntity<Void> assignUserToCourse(@Valid @RequestBody AssignUserToCourseDTO dto) {
         userAssignmentService.assignUserToCourse(dto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PostMapping("/assign-user-to-mobgroup")
+    @PostMapping("/users/assign-mob-group")
+    @PreAuthorize("hasRole('admin')")
     public ResponseEntity<Void> assignUserToMobGroup(@Valid @RequestBody AssignUserToMobGroupDTO dto) {
         userAssignmentService.assignUserToMobGroup(dto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -40,14 +38,21 @@ public class AdminManagementController {
 
     // Mob group management endpoints
     @PostMapping("/mob-groups")
+    @PreAuthorize("hasRole('admin')")
     public ResponseEntity<Void> createMobGroup(@Valid @RequestBody CreateMobGroupDTO dto) {
         userAssignmentService.createMobGroup(dto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @GetMapping("/courses/{courseId}/mob-groups")
-    public ResponseEntity<List<CreateMobGroupDTO>> getMobGroupsForCourse(@PathVariable Long courseId) {
-        // This would require additional DTO mapping in the service
-        return ResponseEntity.ok(List.of());
+    @PreAuthorize("hasAnyRole('admin','user')")
+    public ResponseEntity<List<MobGroupOptionDTO>> getMobGroupsForCourse(@PathVariable Long courseId) {
+        return ResponseEntity.ok(userAssignmentService.getMobGroupsForCourse(courseId));
+    }
+
+    @GetMapping("/users")
+    @PreAuthorize("hasRole('admin')")
+    public ResponseEntity<List<UserSummaryDTO>> getUsers(@RequestParam(required = false) Long courseId) {
+        return ResponseEntity.ok(userAssignmentService.getUsers(courseId));
     }
 }
