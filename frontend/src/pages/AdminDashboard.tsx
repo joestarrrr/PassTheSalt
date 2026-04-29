@@ -83,7 +83,7 @@ export function AdminDashboard() {
               <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-sky-200 text-[10px] font-black">RT</span>
               Rating Trend
             </p>
-            <p className="mt-3 text-3xl font-extrabold text-slate-900">
+            <p className="mt-3 text-2xl font-extrabold text-slate-900 sm:text-[1.7rem]">
               {dashboardQuery.data?.averageRating && dashboardQuery.data.averageRating >= 4 ? 'Strong' : 'Needs attention'}
             </p>
             <p className="mt-1 text-sm text-slate-600">Based on current score distribution</p>
