@@ -1,6 +1,20 @@
 import { useEffect, useState } from 'react'
 import './App.css'
 
+const DEFAULT_PROD_BACKEND_URL = 'https://passthesalt-production.up.railway.app'
+const IS_LOCAL_HOST =
+  typeof window !== 'undefined' &&
+  (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+
+const BACKEND_URL =
+  typeof __BACKEND_URL__ !== 'undefined' && __BACKEND_URL__
+    ? __BACKEND_URL__
+    : IS_LOCAL_HOST
+      ? 'http://localhost:8080'
+      : DEFAULT_PROD_BACKEND_URL
+
+const API_ROOT_URL = `${BACKEND_URL}/`
+
 function App() {
   const [message, setMessage] = useState<string>('')
   const [loading, setLoading] = useState<boolean>(true)
@@ -10,7 +24,7 @@ function App() {
     const fetchMessage = async () => {
       try {
         setLoading(true)
-        const response = await fetch('http://localhost:8080/')
+        const response = await fetch(API_ROOT_URL)
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`)
         }
