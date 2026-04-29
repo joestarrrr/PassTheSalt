@@ -1,7 +1,7 @@
 import { Link } from '@tanstack/react-router'
 
 const links = [
-  { to: '/admin', label: 'Dashboard', badge: 'DB' },
+  { to: '/admin', label: 'Dashboard', badge: 'DB', exact: true },
   { to: '/admin/courses', label: 'Courses', badge: 'CR' },
   { to: '/admin/mob-groups', label: 'Mob Groups', badge: 'MG' },
   { to: '/admin/users', label: 'Users', badge: 'US' },
@@ -16,6 +16,7 @@ export function AdminNavigation() {
         <Link
           key={link.to}
           to={link.to}
+          activeOptions={link.exact ? { exact: true } : undefined}
           title={`Go to ${link.label}`}
           activeProps={{
             className:

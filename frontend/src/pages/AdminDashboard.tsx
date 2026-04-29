@@ -45,17 +45,13 @@ export function AdminDashboard() {
     : 'No active course'
 
   return (
-    <main className="rounded-[2rem] border border-white/70 bg-white/80 p-5 shadow-[0_20px_60px_rgba(109,40,217,0.10)] backdrop-blur-sm transition-colors sm:p-8">
-      <div className="space-y-8">
-        <section className="rounded-3xl border border-violet-100 bg-gradient-to-r from-violet-50 via-white to-fuchsia-50 p-6 shadow-sm sm:p-8">
-          <p className="text-xs font-semibold uppercase tracking-[0.35em] text-violet-500/90">Admin Workspace</p>
-          <h2 className="mt-2 text-3xl font-black tracking-tight text-slate-900 sm:text-5xl">Welcome Admin</h2>
-          <p className="mt-3 max-w-2xl text-sm text-slate-600 sm:text-base">
-            Monitor platform health, jump into management actions, and track feedback quality in one place.
-          </p>
+    <main className="rounded-[2rem] border border-white/70 bg-white/80 p-4 shadow-[0_20px_60px_rgba(109,40,217,0.10)] backdrop-blur-sm transition-colors sm:p-6 lg:p-8">
+      <div className="space-y-6 sm:space-y-8">
+        <section className="rounded-3xl border border-violet-100/80 bg-white/95 px-5 py-6 shadow-sm sm:px-6 sm:py-7">
+          <h2 className="text-2xl font-black tracking-tight text-slate-900 sm:text-4xl">Welcome Admin</h2>
         </section>
 
-        <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <section className="grid gap-3 sm:grid-cols-2 sm:gap-4 xl:grid-cols-4">
           <div className="rounded-3xl border border-emerald-100 bg-emerald-50/70 p-5 shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-lg">
             <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-emerald-700">
               <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-emerald-200 text-[10px] font-black">AC</span>
@@ -94,7 +90,7 @@ export function AdminDashboard() {
           </div>
         </section>
 
-        <section className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
+        <section className="grid gap-3 sm:gap-4 xl:grid-cols-[1.1fr_0.9fr]">
           <div className="rounded-3xl border border-slate-100 bg-white/80 p-5 shadow-sm backdrop-blur-sm sm:p-6">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
@@ -146,7 +142,7 @@ export function AdminDashboard() {
           </div>
         </section>
 
-        <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <section className="grid gap-3 sm:grid-cols-2 sm:gap-4 xl:grid-cols-4">
           <h3 className="sm:col-span-2 xl:col-span-4 text-lg font-bold text-slate-900">Quick Actions</h3>
           <Link
             to="/admin/courses"
