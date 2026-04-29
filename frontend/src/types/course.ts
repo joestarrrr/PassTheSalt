@@ -20,8 +20,8 @@ export type CourseDay = {
 
 export type UserCourseContext = {
   userId: number
-  courseId: number
-  courseName: string
+  courseId: number | null
+  courseName: string | null
   mobGroupId: number | null
   mobGroupName: string | null
   courseDays: CourseDay[]

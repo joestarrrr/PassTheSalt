@@ -18,9 +18,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.PutMapping;
 
 import com.passthesalt.dto.AwLocationDTO;
 import com.passthesalt.dto.CreateAwLocationDTO;
+import com.passthesalt.dto.UpdateAwLocationDTO;
 import com.passthesalt.model.User;
 import com.passthesalt.service.AwLocationService;
 import com.passthesalt.service.CurrentUserResolver;
@@ -56,6 +58,16 @@ public class AwLocationController {
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
+    @PutMapping("/{locationId}")
+    public ResponseEntity<AwLocationDTO> updateAwLocation(
+            @PathVariable Long locationId,
+            @Valid @RequestBody UpdateAwLocationDTO request,
+            @AuthenticationPrincipal Jwt jwt,
+            @RequestHeader(value = "X-Clerk-Email", required = false) String clerkEmail) {
+        User currentUser = currentUserResolver.resolve(jwt, clerkEmail);
+        return ResponseEntity.ok(awLocationService.updateAwLocation(locationId, request, currentUser));
+    }
+
     @PostMapping("/{locationId}/vote")
     public ResponseEntity<AwLocationDTO> voteAwLocation(
             @PathVariable Long locationId,
@@ -72,6 +84,16 @@ public class AwLocationController {
             @RequestHeader(value = "X-Clerk-Email", required = false) String clerkEmail) {
         User currentUser = currentUserResolver.resolve(jwt, clerkEmail);
         return ResponseEntity.ok(awLocationService.removeAwVote(locationId, currentUser));
+    }
+
+    @DeleteMapping("/{locationId}")
+    public ResponseEntity<Void> deleteAwLocation(
+            @PathVariable Long locationId,
+            @AuthenticationPrincipal Jwt jwt,
+            @RequestHeader(value = "X-Clerk-Email", required = false) String clerkEmail) {
+        User currentUser = currentUserResolver.resolve(jwt, clerkEmail);
+        awLocationService.deleteAwLocation(locationId, currentUser);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/winner")

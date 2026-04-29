@@ -62,15 +62,18 @@ export function UserCourseRetroPage() {
   const handleSubmitRetro = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    if (!selectedDayId || !startOfDay.trim() || !userContextQuery.data?.courseId || !userContextQuery.data?.mobGroupId) {
+    const courseId = userContextQuery.data?.courseId ?? null
+    const mobGroupId = userContextQuery.data?.mobGroupId ?? null
+
+    if (!selectedDayId || !startOfDay.trim() || !courseId || !mobGroupId) {
       setFeedback({ type: 'error', message: 'Please select a day and add a start-of-day note' })
       return
     }
 
     const retroData: RetroInput = {
-      courseId: userContextQuery.data.courseId,
+      courseId,
       courseDayId: selectedDayId,
-      mobGroupId: userContextQuery.data.mobGroupId,
+      mobGroupId,
       userId: userId as number,
       startOfDay,
       workedWell: workedWell || null,

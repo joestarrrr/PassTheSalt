@@ -323,6 +323,26 @@ export const createAwLocation = async ({ courseId, name, lng, lat }) => {
   return parseResponse(response, 'Failed to create afterwork location')
 }
 
+export const updateAwLocation = async (locationId, { name }) => {
+  const response = await authFetch(`/api/aw-locations/${locationId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ name }),
+  })
+
+  return parseResponse(response, 'Failed to update afterwork location')
+}
+
+export const deleteAwLocation = async (locationId) => {
+  const response = await authFetch(`/api/aw-locations/${locationId}`, {
+    method: 'DELETE',
+  })
+
+  return parseResponse(response, 'Failed to delete afterwork location')
+}
+
 export const voteAwLocation = async (locationId) => {
   const response = await authFetch(`/api/aw-locations/${locationId}/vote`, {
     method: 'POST',

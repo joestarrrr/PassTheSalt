@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.passthesalt.dto.AwLocationDTO;
 import com.passthesalt.dto.CreateAwLocationDTO;
+import com.passthesalt.dto.UpdateAwLocationDTO;
 import com.passthesalt.exception.BadRequestException;
 import com.passthesalt.exception.ForbiddenException;
 import com.passthesalt.exception.ResourceNotFoundException;
@@ -60,6 +61,24 @@ public class AwLocationService {
     }
 
     @Transactional
+    public AwLocationDTO updateAwLocation(Long locationId, UpdateAwLocationDTO request, User currentUser) {
+        AwLocation location = getLocationForCurrentUser(locationId, currentUser);
+        validateCanManageLocation(currentUser, location);
+
+        location.setName(request.name().trim());
+        AwLocation savedLocation = awLocationRepository.save(location);
+        return toDto(savedLocation, currentUser);
+    }
+
+    @Transactional
+    public void deleteAwLocation(Long locationId, User currentUser) {
+        AwLocation location = getLocationForCurrentUser(locationId, currentUser);
+        validateCanManageLocation(currentUser, location);
+
+        awLocationRepository.delete(location);
+    }
+
+    @Transactional
     public AwLocationDTO voteAwLocation(Long locationId, User currentUser) {
         AwLocation location = getLocationForCurrentUser(locationId, currentUser);
 
@@ -102,9 +121,23 @@ public class AwLocationService {
     }
 
     private void validateCourseMembership(User currentUser, Long courseId) {
-        if (currentUser.getCourseId() == null || !currentUser.getCourseId().equals(courseId)) {
+        if (!isAdmin(currentUser) && (currentUser.getCourseId() == null || !currentUser.getCourseId().equals(courseId))) {
             throw new ForbiddenException("You do not have access to this course");
         }
+    }
+
+    private void validateCanManageLocation(User currentUser, AwLocation location) {
+        if (isAdmin(currentUser)) {
+            return;
+        }
+
+        if (location.getCreatedBy() == null || !currentUser.getId().equals(location.getCreatedBy().getId())) {
+            throw new ForbiddenException("You can only edit or delete your own location");
+        }
+    }
+
+    private boolean isAdmin(User currentUser) {
+        return currentUser.getRole() != null && currentUser.getRole().equalsIgnoreCase("admin");
     }
 
     private AwLocationDTO toDto(AwLocation location, User currentUser) {

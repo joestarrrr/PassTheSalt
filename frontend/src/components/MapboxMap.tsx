@@ -3,14 +3,17 @@ import mapboxgl from 'mapbox-gl'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import {
+  deleteAwLocation,
   createAwLocation,
   getAwLocations,
   getWinningAwLocation,
   removeAwVote,
+  updateAwLocation,
   voteAwLocation,
 } from '../api.js'
 import type { AwLocation } from '../types/aw'
 import { getSessionToken } from '../auth/sessionToken'
+import { useAuthSession } from '../auth/AuthSession'
 
 type MapboxMapProps = {
   courseId?: number | null
@@ -70,11 +73,14 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
   const popupRef = useRef<mapboxgl.Popup | null>(null)
   const markersRef = useRef<Map<number, mapboxgl.Marker>>(new Map())
   const queryClient = useQueryClient()
+  const { backendUser } = useAuthSession()
   const [mapReady, setMapReady] = useState(false)
   const [mapError, setMapError] = useState<string | null>(null)
   const [draftPoint, setDraftPoint] = useState<{ lng: number; lat: number } | null>(null)
   const [locationName, setLocationName] = useState('')
   const [feedback, setFeedback] = useState<Feedback | null>(null)
+  const [selectedLocationId, setSelectedLocationId] = useState<number | null>(null)
+  const [selectedLocationName, setSelectedLocationName] = useState('')
 
   const authToken = getAuthToken()
   const hasCourse = Boolean(courseId)
@@ -107,6 +113,35 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
     },
     onError: (error) => {
       setFeedback({ type: 'error', message: error instanceof Error ? error.message : 'Failed to create location.' })
+    },
+  })
+
+  const updateMutation = useMutation({
+    mutationFn: (input: { locationId: number; name: string }) =>
+      updateAwLocation(input.locationId, { name: input.name }) as Promise<AwLocation>,
+    onSuccess: (updatedLocation) => {
+      void queryClient.invalidateQueries({ queryKey: ['aw-locations', courseId] })
+      void queryClient.invalidateQueries({ queryKey: ['aw-winning-location', courseId] })
+      setSelectedLocationName(updatedLocation.name)
+      setFeedback({ type: 'success', message: 'Location updated.' })
+    },
+    onError: (error) => {
+      setFeedback({ type: 'error', message: error instanceof Error ? error.message : 'Failed to update location.' })
+    },
+  })
+
+  const deleteMutation = useMutation({
+    mutationFn: (locationId: number) => deleteAwLocation(locationId),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['aw-locations', courseId] })
+      void queryClient.invalidateQueries({ queryKey: ['aw-winning-location', courseId] })
+      popupRef.current?.remove()
+      setSelectedLocationId(null)
+      setSelectedLocationName('')
+      setFeedback({ type: 'success', message: 'Location deleted.' })
+    },
+    onError: (error) => {
+      setFeedback({ type: 'error', message: error instanceof Error ? error.message : 'Failed to delete location.' })
     },
   })
 
@@ -161,6 +196,8 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
       })
 
       mapInstance.on('click', (event) => {
+        setSelectedLocationId(null)
+        setSelectedLocationName('')
         setDraftPoint({ lng: event.lngLat.lng, lat: event.lngLat.lat })
         setLocationName('')
         setFeedback(null)
@@ -186,6 +223,14 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
     }
   }, [hasCourse])
 
+  const selectedLocation = selectedLocationId
+    ? (locationsQuery.data ?? []).find((location) => location.id === selectedLocationId) ?? null
+    : null
+  const canManageSelectedLocation = Boolean(
+    selectedLocation &&
+      (backendUser?.role === 'admin' || backendUser?.id === selectedLocation.createdByUserId),
+  )
+
   useEffect(() => {
     if (!map.current || !mapReady) {
       return
@@ -206,6 +251,9 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
       markerElement.addEventListener('click', (event) => {
         event.stopPropagation()
 
+        setDraftPoint(null)
+        setSelectedLocationId(location.id)
+        setSelectedLocationName(location.name)
         popupRef.current?.remove()
         const popup = new mapboxgl.Popup({ offset: 18, closeButton: true, maxWidth: '280px' })
           .setLngLat([location.lng, location.lat])
@@ -230,6 +278,16 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
     }
   }, [locationsQuery.data, mapReady])
 
+  useEffect(() => {
+    if (!selectedLocation) {
+      return
+    }
+
+    if (!selectedLocationName) {
+      setSelectedLocationName(selectedLocation.name)
+    }
+  }, [selectedLocation, selectedLocationName])
+
   const handleCreateLocation = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
@@ -243,6 +301,20 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
       name: locationName.trim(),
       lng: draftPoint.lng,
       lat: draftPoint.lat,
+    })
+  }
+
+  const handleUpdateLocation = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+
+    if (!selectedLocation || !selectedLocationName.trim()) {
+      setFeedback({ type: 'error', message: 'Enter a new name before saving.' })
+      return
+    }
+
+    updateMutation.mutate({
+      locationId: selectedLocation.id,
+      name: selectedLocationName.trim(),
     })
   }
 
@@ -350,6 +422,91 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
             </button>
           </div>
         </form>
+      )}
+
+      {selectedLocation && (
+        <div className="absolute bottom-4 left-4 z-10 w-[calc(100%-2rem)] max-w-sm rounded-3xl border border-white/10 bg-white/95 p-4 shadow-2xl backdrop-blur">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-violet-500">Selected Location</p>
+              <h3 className="mt-2 text-lg font-bold text-slate-900">{selectedLocation.name}</h3>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedLocationId(null)
+                setSelectedLocationName('')
+              }}
+              className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50"
+            >
+              Close
+            </button>
+          </div>
+
+          <div className="mt-3 grid gap-2 rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-600">
+            <p>Votes: {selectedLocation.voteCount}</p>
+            <p>Suggested by: {selectedLocation.createdByName}</p>
+            <p>
+              Coordinates: {selectedLocation.lat.toFixed(4)}, {selectedLocation.lng.toFixed(4)}
+            </p>
+          </div>
+
+          <div className="mt-4 space-y-3">
+            {canManageSelectedLocation ? (
+              <form onSubmit={handleUpdateLocation} className="space-y-3">
+                <label className="block">
+                  <span className="mb-1 block text-sm font-medium text-slate-700">Rename location</span>
+                  <input
+                    value={selectedLocationName}
+                    onChange={(event) => setSelectedLocationName(event.target.value)}
+                    className="w-full rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm outline-none focus:border-violet-400 focus:ring-4 focus:ring-violet-200/60"
+                  />
+                </label>
+
+                <div className="flex gap-2">
+                  <button
+                    type="submit"
+                    disabled={updateMutation.isPending}
+                    className="flex-1 rounded-full bg-violet-600 px-4 py-3 text-sm font-semibold text-white hover:bg-violet-500 disabled:bg-violet-300"
+                  >
+                    {updateMutation.isPending ? 'Saving...' : 'Save changes'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => deleteMutation.mutate(selectedLocation.id)}
+                    disabled={deleteMutation.isPending}
+                    className="rounded-full border border-rose-200 bg-white px-4 py-3 text-sm font-semibold text-rose-700 hover:bg-rose-50 disabled:opacity-60"
+                  >
+                    {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <p className="text-sm text-slate-600">You can vote on this location, but only the creator or an admin can edit it.</p>
+            )}
+
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => voteMutation.mutate(selectedLocation.id)}
+                disabled={selectedLocation.votedByCurrentUser || voteMutation.isPending}
+                className="flex-1 rounded-full bg-violet-600 px-4 py-3 text-sm font-semibold text-white hover:bg-violet-500 disabled:bg-violet-300"
+              >
+                {selectedLocation.votedByCurrentUser ? 'Already voted' : voteMutation.isPending ? 'Voting...' : 'Vote'}
+              </button>
+              {selectedLocation.votedByCurrentUser ? (
+                <button
+                  type="button"
+                  onClick={() => removeVoteMutation.mutate(selectedLocation.id)}
+                  disabled={removeVoteMutation.isPending}
+                  className="rounded-full border border-violet-200 bg-white px-4 py-3 text-sm font-semibold text-violet-700 hover:bg-violet-50 disabled:opacity-60"
+                >
+                  {removeVoteMutation.isPending ? 'Removing...' : 'Remove vote'}
+                </button>
+              ) : null}
+            </div>
+          </div>
+        </div>
       )}
 
       <div className="absolute bottom-4 right-4 z-10 rounded-2xl border border-white/10 bg-slate-950/85 px-4 py-3 text-sm text-slate-200 shadow-2xl backdrop-blur">
