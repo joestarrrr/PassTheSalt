@@ -54,7 +54,7 @@ public class UserAssignmentService {
                 .orElseThrow(() -> new RuntimeException("Mob group not found with id: " + dto.mobGroupId()));
 
         // Ensure user is in the same course as the mob group
-        if (!user.getCourseId().equals(mobGroup.getCourseId())) {
+        if (user.getCourseId() == null || !user.getCourseId().equals(mobGroup.getCourseId())) {
             throw new RuntimeException("User and mob group must be in the same course");
         }
 

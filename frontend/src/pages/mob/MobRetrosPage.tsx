@@ -62,11 +62,12 @@ export function MobRetrosPage() {
     },
   })
 
+  const courseId = userContextQuery.data?.courseId ?? backendUser?.courseId ?? null
+  const mobGroupId = userContextQuery.data?.mobGroupId ?? backendUser?.mobGroupId ?? null
+  const isNotAssigned = !userContextQuery.isLoading && (!courseId || !mobGroupId)
+
   const handleSubmitRetro = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-
-    const courseId = userContextQuery.data?.courseId ?? null
-    const mobGroupId = userContextQuery.data?.mobGroupId ?? null
 
     if (!selectedDayId) {
       setFeedback({ type: 'error', message: '📅 Please select a course day first' })
@@ -79,7 +80,7 @@ export function MobRetrosPage() {
     }
 
     if (!courseId || !mobGroupId) {
-      setFeedback({ type: 'error', message: '⚠️ You are not assigned to a mob group' })
+      setFeedback({ type: 'error', message: '⚠️ You are not assigned to a mob group. Ask your admin to assign you.' })
       return
     }
 
@@ -107,6 +108,11 @@ export function MobRetrosPage() {
   return (
     <MobLayout title="Daily Retros" description="Reflect on your day with your mob group and submit your insights.">
       <div className="mx-auto w-full max-w-6xl">
+        {isNotAssigned && (
+          <div className="mb-6 rounded-2xl bg-amber-50 px-5 py-4 text-sm font-medium text-amber-800 border border-amber-200">
+            ⚠️ You are not assigned to a mob group or course yet. Contact your admin to get assigned before submitting a retro.
+          </div>
+        )}
         <div className="grid gap-6 lg:grid-cols-[1fr_1.5fr]">
           {/* Days Sidebar */}
           <div className="rounded-3xl border border-slate-100 bg-white/90 shadow-sm">
