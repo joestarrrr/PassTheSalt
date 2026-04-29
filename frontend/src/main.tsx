@@ -5,7 +5,6 @@ import { RouterProvider } from '@tanstack/react-router'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { router } from './router/appRouter'
 import { AuthSessionProvider } from './auth/AuthSession'
-import { DarkModeProvider } from './context/DarkModeContext'
 import { getAppRootUrl } from './auth/appUrls'
 import './index.css'
 
@@ -28,11 +27,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       signUpForceRedirectUrl={appRootUrl}
     >
       <QueryClientProvider client={queryClient}>
-        <DarkModeProvider>
           <AuthSessionProvider>
             <RouterProvider router={router} />
           </AuthSessionProvider>
-        </DarkModeProvider>
       </QueryClientProvider>
     </ClerkProvider>
   </React.StrictMode>,

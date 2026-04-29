@@ -13,7 +13,6 @@ body,
 
 html {
   color-scheme: light;
-  transition: background-color var(--pts-transition-medium) ease, color var(--pts-transition-medium) ease;
 }
 
 body {
@@ -21,12 +20,6 @@ body {
   min-width: 320px;
   background: #f8fafc;
   color: #0f172a;
-  transition: background-color var(--pts-transition-medium) ease, color var(--pts-transition-medium) ease;
-}
-
-html.dark body {
-  background: #020617;
-  color: #e2e8f0;
 }
 
 button,

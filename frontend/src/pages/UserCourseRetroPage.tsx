@@ -96,15 +96,15 @@ export function UserCourseRetroPage() {
   return (
     <main className="min-h-screen bg-[radial-gradient(circle_at_top,_#faf5ff_0%,_#f5f3ff_30%,_#eef2ff_100%)] px-4 py-6 text-slate-800 sm:px-6 sm:py-8 lg:px-8">
       <div className="mx-auto flex w-full max-w-4xl flex-col gap-6">
-        <header className="rounded-[2rem] border border-white/70 bg-white/80 p-5 shadow-[0_20px_60px_rgba(109,40,217,0.10)] backdrop-blur-sm dark:border-slate-700/70 dark:bg-slate-800/80 dark:shadow-[0_20px_60px_rgba(0,0,0,0.30)] sm:p-8">
-          <p className="text-xs font-semibold uppercase tracking-[0.35em] text-violet-500/90 dark:text-violet-400/90">Course Retro</p>
-          <h1 className="mt-3 text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-4xl">Daily Retro Submission</h1>
-          <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-600 dark:text-slate-300 sm:text-base">
+        <header className="rounded-[2rem] border border-white/70 bg-white/80 p-5 shadow-[0_20px_60px_rgba(109,40,217,0.10)] backdrop-blur-sm sm:p-8">
+          <p className="text-xs font-semibold uppercase tracking-[0.35em] text-violet-500/90">Course Retro</p>
+          <h1 className="mt-3 text-2xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">Daily Retro Submission</h1>
+          <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-600 sm:text-base">
             Share your daily reflections, what worked well, what you learned, and areas for improvement.
           </p>
 
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
-            <div className="rounded-2xl border border-violet-100 bg-violet-50/70 px-4 py-2 text-sm text-slate-700 dark:border-violet-900/50 dark:bg-slate-900/70 dark:text-slate-200">
+            <div className="rounded-2xl border border-violet-100 bg-violet-50/70 px-4 py-2 text-sm text-slate-700">
               <p>Signed in as: {backendUser?.fullName ?? 'Loading...'}</p>
               <p>Course: {userContextQuery.data?.courseName ?? 'Not assigned'}</p>
               <p>Mob Group: {userContextQuery.data?.mobGroupName ?? 'Not assigned'}</p>
@@ -114,13 +114,13 @@ export function UserCourseRetroPage() {
 
         <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
           {/* Course Days Sidebar */}
-          <div className="rounded-3xl border border-slate-100 bg-white/80 p-4 sm:p-5 dark:border-slate-700 dark:bg-slate-800/80">
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white">Course Days</h3>
+          <div className="rounded-3xl border border-slate-100 bg-white/80 p-4 sm:p-5">
+            <h3 className="text-lg font-bold text-slate-900">Course Days</h3>
 
             {userContextQuery.isLoading ? (
-              <p className="mt-4 text-sm text-slate-600 dark:text-slate-400">Loading course days...</p>
+              <p className="mt-4 text-sm text-slate-600">Loading course days...</p>
             ) : courseDays.length === 0 ? (
-              <p className="mt-4 text-sm text-slate-600 dark:text-slate-400">No course days available</p>
+              <p className="mt-4 text-sm text-slate-600">No course days available</p>
             ) : (
               <div className="mt-4 space-y-2">
                 {visibleCourseDays.map((day) => (
@@ -132,8 +132,8 @@ export function UserCourseRetroPage() {
                     key={day.id}
                     className={`w-full rounded-2xl px-4 py-3 text-left text-sm font-medium transition-all ${
                       selectedDayId === day.id
-                        ? 'bg-violet-600 text-white shadow-lg shadow-violet-500/20 dark:bg-violet-700'
-                        : 'bg-slate-50 text-slate-900 hover:bg-slate-100 dark:bg-slate-900/70 dark:text-slate-100 dark:hover:bg-slate-700'
+                        ? 'bg-violet-600 text-white shadow-lg shadow-violet-500/20'
+                        : 'bg-slate-50 text-slate-900 hover:bg-slate-100'
                     }`}
                   >
                     Day {day.dayNumber}
@@ -146,7 +146,7 @@ export function UserCourseRetroPage() {
                     type="button"
                     onClick={() => setDaysPage((page) => Math.max(0, page - 1))}
                     disabled={daysPage === 0}
-                    className="rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
+                    className="rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     Previous
                   </button>
@@ -159,8 +159,8 @@ export function UserCourseRetroPage() {
                         onClick={() => setDaysPage(index)}
                         className={`h-9 min-w-9 rounded-full px-3 text-sm font-semibold transition ${
                           index === daysPage
-                            ? 'bg-violet-600 text-white shadow-lg shadow-violet-500/20 dark:bg-violet-700'
-                            : 'border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800'
+                            ? 'bg-violet-600 text-white shadow-lg shadow-violet-500/20'
+                            : 'border border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
                         }`}
                       >
                         {index + 1}
@@ -172,7 +172,7 @@ export function UserCourseRetroPage() {
                     type="button"
                     onClick={() => setDaysPage((page) => Math.min(totalPages - 1, page + 1))}
                     disabled={daysPage >= totalPages - 1}
-                    className="rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
+                    className="rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     Next
                   </button>
@@ -182,81 +182,81 @@ export function UserCourseRetroPage() {
           </div>
 
           {/* Retro Form */}
-          <form onSubmit={handleSubmitRetro} className="space-y-4 rounded-3xl border border-violet-100 bg-violet-50/70 p-5 dark:border-violet-900/50 dark:bg-slate-800/70">
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white">Submit Retro</h3>
+          <form onSubmit={handleSubmitRetro} className="space-y-4 rounded-3xl border border-violet-100 bg-violet-50/70 p-5">
+            <h3 className="text-lg font-bold text-slate-900">Submit Retro</h3>
 
             {feedback && (
               <div
                 className={`rounded-2xl px-4 py-3 text-sm font-medium ${
                   feedback.type === 'success'
-                    ? 'bg-emerald-50 text-emerald-700 dark:border dark:border-emerald-900/50 dark:bg-emerald-950/60 dark:text-emerald-200'
-                    : 'bg-rose-50 text-rose-700 dark:border dark:border-rose-900/50 dark:bg-rose-950/60 dark:text-rose-200'
+                    ? 'bg-emerald-50 text-emerald-700'
+                    : 'bg-rose-50 text-rose-700'
                 }`}
               >
                 {feedback.message}
               </div>
             )}
 
-            {!selectedDayId && <p className="text-sm text-slate-600 dark:text-slate-400">Select a day to start</p>}
+            {!selectedDayId && <p className="text-sm text-slate-600">Select a day to start</p>}
 
             {selectedDayId && (
               <>
                 <label className="block">
-                  <span className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200">Start of Day Note</span>
+                  <span className="mb-1 block text-sm font-medium text-slate-700">Start of Day Note</span>
                   <textarea
                     value={startOfDay}
                     onChange={(e) => setStartOfDay(e.target.value)}
                     placeholder="What was your focus for the day?"
                     rows={2}
-                    className="w-full rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-violet-400 focus:ring-4 focus:ring-violet-200/60 dark:border-violet-900/50 dark:bg-slate-900 dark:text-slate-100 dark:placeholder-slate-400 dark:focus:border-violet-600 dark:focus:ring-violet-500/30"
+                    className="w-full rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-violet-400 focus:ring-4 focus:ring-violet-200/60"
                   />
                 </label>
 
                 <label className="block">
-                  <span className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200">What Worked Well?</span>
+                  <span className="mb-1 block text-sm font-medium text-slate-700">What Worked Well?</span>
                   <textarea
                     value={workedWell}
                     onChange={(e) => setWorkedWell(e.target.value)}
                     placeholder="Successes and positive moments..."
                     rows={2}
-                    className="w-full rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-violet-400 focus:ring-4 focus:ring-violet-200/60 dark:border-violet-900/50 dark:bg-slate-900 dark:text-slate-100 dark:placeholder-slate-400 dark:focus:border-violet-600 dark:focus:ring-violet-500/30"
+                    className="w-full rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-violet-400 focus:ring-4 focus:ring-violet-200/60"
                   />
                 </label>
 
                 <label className="block">
-                  <span className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200">What Did You Learn?</span>
+                  <span className="mb-1 block text-sm font-medium text-slate-700">What Did You Learn?</span>
                   <textarea
                     value={learned}
                     onChange={(e) => setLearned(e.target.value)}
                     placeholder="Key takeaways and insights..."
                     rows={2}
-                    className="w-full rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-violet-400 focus:ring-4 focus:ring-violet-200/60 dark:border-violet-900/50 dark:bg-slate-900 dark:text-slate-100 dark:placeholder-slate-400 dark:focus:border-violet-600 dark:focus:ring-violet-500/30"
+                    className="w-full rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-violet-400 focus:ring-4 focus:ring-violet-200/60"
                   />
                 </label>
 
                 <label className="block">
-                  <span className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200">Areas for Improvement</span>
+                  <span className="mb-1 block text-sm font-medium text-slate-700">Areas for Improvement</span>
                   <textarea
                     value={improve}
                     onChange={(e) => setImprove(e.target.value)}
                     placeholder="What can be better next time..."
                     rows={2}
-                    className="w-full rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-violet-400 focus:ring-4 focus:ring-violet-200/60 dark:border-violet-900/50 dark:bg-slate-900 dark:text-slate-100 dark:placeholder-slate-400 dark:focus:border-violet-600 dark:focus:ring-violet-500/30"
+                    className="w-full rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-violet-400 focus:ring-4 focus:ring-violet-200/60"
                   />
                 </label>
 
                 <label className="block">
-                  <span className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200">Lecture Name (Optional)</span>
+                  <span className="mb-1 block text-sm font-medium text-slate-700">Lecture Name (Optional)</span>
                   <input
                     value={lectureName}
                     onChange={(e) => setLectureName(e.target.value)}
                     placeholder="e.g. React Hooks"
-                    className="w-full rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-violet-400 focus:ring-4 focus:ring-violet-200/60 dark:border-violet-900/50 dark:bg-slate-900 dark:text-slate-100 dark:placeholder-slate-400 dark:focus:border-violet-600 dark:focus:ring-violet-500/30"
+                    className="w-full rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-violet-400 focus:ring-4 focus:ring-violet-200/60"
                   />
                 </label>
 
                 <label className="block">
-                  <span className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200">Day Rating (1-5)</span>
+                  <span className="mb-1 block text-sm font-medium text-slate-700">Day Rating (1-5)</span>
                   <div className="flex gap-2">
                     {[1, 2, 3, 4, 5].map((r) => (
                       <button
@@ -265,8 +265,8 @@ export function UserCourseRetroPage() {
                         onClick={() => setRating(r)}
                         className={`flex-1 rounded-full py-2 text-sm font-semibold transition-all ${
                           rating === r
-                            ? 'bg-violet-600 text-white shadow-lg shadow-violet-500/20 dark:bg-violet-700'
-                            : 'bg-white text-violet-600 ring-1 ring-violet-200 hover:bg-violet-50 dark:border dark:border-violet-900/50 dark:bg-slate-900 dark:text-violet-300 dark:ring-0 dark:hover:bg-slate-800'
+                            ? 'bg-violet-600 text-white shadow-lg shadow-violet-500/20'
+                            : 'bg-white text-violet-600 ring-1 ring-violet-200 hover:bg-violet-50'
                         }`}
                       >
                         {r}
@@ -278,7 +278,7 @@ export function UserCourseRetroPage() {
                 <button
                   type="submit"
                   disabled={submitMutation.isPending}
-                  className="w-full rounded-full bg-violet-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-violet-500 disabled:bg-violet-300 dark:bg-violet-700 dark:hover:bg-violet-600"
+                  className="w-full rounded-full bg-violet-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-violet-500 disabled:bg-violet-300"
                 >
                   {submitMutation.isPending ? 'Submitting...' : 'Submit Retro'}
                 </button>

@@ -81,10 +81,10 @@ export function CourseOverview({ roleLabel }: CourseOverviewProps) {
               {visibleDays.map((day) => (
                 <div
                   key={day.id}
-                  className="rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3 text-sm transition-shadow hover:shadow-md dark:border-slate-700 dark:bg-slate-800/60"
+                  className="rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3 text-sm transition-shadow hover:shadow-md"
                 >
-                  <p className="font-semibold text-slate-900 dark:text-white">Day {day.dayNumber}</p>
-                  <p className="text-slate-600 dark:text-slate-300">{day.date}</p>
+                  <p className="font-semibold text-slate-900">Day {day.dayNumber}</p>
+                  <p className="text-slate-600">{day.date}</p>
                 </div>
               ))}
 
@@ -92,7 +92,7 @@ export function CourseOverview({ roleLabel }: CourseOverviewProps) {
                 <button
                   onClick={() => setDaysPage((p) => Math.max(0, p - 1))}
                   disabled={daysPage === 0}
-                  className="rounded-full px-3 py-1 text-sm ring-1 ring-inset ring-slate-200 hover:bg-slate-100 disabled:opacity-50 dark:ring-slate-700 dark:hover:bg-slate-700"
+                  className="rounded-full px-3 py-1 text-sm ring-1 ring-inset ring-slate-200 hover:bg-slate-100 disabled:opacity-50"
                 >
                   Previous
                 </button>
@@ -102,7 +102,7 @@ export function CourseOverview({ roleLabel }: CourseOverviewProps) {
                     <button
                       key={i}
                       onClick={() => setDaysPage(i)}
-                      className={`w-8 rounded-full text-sm ${i === daysPage ? 'bg-violet-600 text-white' : 'bg-white ring-1 ring-inset ring-slate-200 dark:bg-slate-800 dark:ring-slate-700'}`}
+                      className={`w-8 rounded-full text-sm ${i === daysPage ? 'bg-violet-600 text-white' : 'bg-white ring-1 ring-inset ring-slate-200'}`}
                     >
                       {i + 1}
                     </button>
@@ -112,7 +112,7 @@ export function CourseOverview({ roleLabel }: CourseOverviewProps) {
                 <button
                   onClick={() => setDaysPage((p) => Math.min(totalPages - 1, p + 1))}
                   disabled={daysPage >= totalPages - 1}
-                  className="rounded-full px-3 py-1 text-sm ring-1 ring-inset ring-slate-200 hover:bg-slate-100 disabled:opacity-50 dark:ring-slate-700 dark:hover:bg-slate-700"
+                  className="rounded-full px-3 py-1 text-sm ring-1 ring-inset ring-slate-200 hover:bg-slate-100 disabled:opacity-50"
                 >
                   Next
                 </button>
