@@ -45,13 +45,8 @@ export function AdminDashboard() {
     : 'No active course'
 
   return (
-    <main className="rounded-[2rem] border border-white/70 bg-white/80 p-4 shadow-[0_20px_60px_rgba(109,40,217,0.10)] backdrop-blur-sm transition-colors sm:p-6 lg:p-8">
-      <div className="space-y-6 sm:space-y-8">
-        <section className="rounded-3xl border border-violet-100/80 bg-white/95 px-5 py-6 shadow-sm sm:px-6 sm:py-7">
-          <h2 className="text-2xl font-black tracking-tight text-slate-900 sm:text-4xl">Welcome Admin</h2>
-        </section>
-
-        <section className="grid gap-3 sm:grid-cols-2 sm:gap-4 xl:grid-cols-4">
+    <div className="space-y-6 sm:space-y-8">
+      <section className="grid gap-3 sm:grid-cols-2 sm:gap-4 xl:grid-cols-4">
           <div className="rounded-3xl border border-emerald-100 bg-emerald-50/70 p-5 shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-lg">
             <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-emerald-700">
               <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-emerald-200 text-[10px] font-black">AC</span>
@@ -194,7 +189,6 @@ export function AdminDashboard() {
             <p className="mt-1 text-sm text-slate-600">Quickly inspect anonymous entries and recurring concerns.</p>
           </Link>
         </section>
-      </div>
-    </main>
+    </div>
   )
 }

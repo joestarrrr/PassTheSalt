@@ -64,18 +64,8 @@ export function AdminCourseManagementPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top,_#faf5ff_0%,_#f5f3ff_30%,_#eef2ff_100%)] px-4 py-6 text-slate-800 sm:px-6 sm:py-8 lg:px-8">
-      <div className="mx-auto flex w-full max-w-4xl flex-col gap-6">
-        <header className="rounded-[2rem] border border-white/70 bg-white/80 p-5 shadow-[0_20px_60px_rgba(109,40,217,0.10)] backdrop-blur-sm sm:p-8">
-          <p className="text-xs font-semibold uppercase tracking-[0.35em] text-violet-500/90">Course Management</p>
-          <h1 className="mt-3 text-2xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">Create & Manage Courses</h1>
-          <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-600 sm:text-base">
-            Set up courses with specific start dates and durations. Courses automatically generate daily pages for retro submissions.
-          </p>
-        </header>
-
-        <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-          <form onSubmit={handleCreateCourse} className="rounded-3xl border border-violet-100 bg-violet-50/70 p-5">
+    <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
+      <form onSubmit={handleCreateCourse} className="rounded-3xl border border-violet-100 bg-violet-50/70 p-5">
             <h3 className="text-lg font-bold text-slate-900">Create New Course</h3>
 
             <div className="mt-4 space-y-4">
@@ -151,7 +141,5 @@ export function AdminCourseManagementPage() {
             )}
           </div>
         </div>
-      </div>
-    </main>
   )
 }

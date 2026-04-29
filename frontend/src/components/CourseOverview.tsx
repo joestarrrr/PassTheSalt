@@ -37,8 +37,7 @@ export function CourseOverview({ roleLabel }: CourseOverviewProps) {
   const visibleDays = days.slice(daysPage * PAGE_SIZE, daysPage * PAGE_SIZE + PAGE_SIZE)
 
   return (
-    <main className="rounded-[2rem] border border-white/70 bg-white/80 p-5 shadow-[0_20px_60px_rgba(109,40,217,0.10)] backdrop-blur-sm sm:p-8">
-      <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
+    <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
         <div className="space-y-4 rounded-3xl border border-violet-100 bg-violet-50/70 p-5">
           <p className="text-xs font-semibold uppercase tracking-[0.35em] text-violet-500/90">{roleLabel} Course</p>
           <h2 className="text-2xl font-extrabold tracking-tight text-slate-900">Course Overview</h2>
@@ -120,7 +119,6 @@ export function CourseOverview({ roleLabel }: CourseOverviewProps) {
             </div>
           )}
         </div>
-      </div>
-    </main>
+    </div>
   )
 }
