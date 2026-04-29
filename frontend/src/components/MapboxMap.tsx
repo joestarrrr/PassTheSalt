@@ -14,6 +14,7 @@ import {
 import type { AwLocation } from '../types/aw'
 import { getSessionToken } from '../auth/sessionToken'
 import { useAuthSession } from '../auth/AuthSession'
+import { useDarkMode } from '../context/DarkModeContext'
 
 type MapboxMapProps = {
   courseId?: number | null
@@ -24,7 +25,8 @@ type Feedback = {
   message: string
 }
 
-const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN
+const MAPBOX_TOKEN =
+  (import.meta.env.VITE_MAPBOX_TOKEN || import.meta.env.VITE_MAPBOX_PUBLIC_TOKEN || '').trim()
 
 function getAuthToken() {
   return getSessionToken()
@@ -32,29 +34,31 @@ function getAuthToken() {
 
 function buildPopupContent(location: AwLocation) {
   const wrapper = document.createElement('div')
-  wrapper.className = 'space-y-3 rounded-2xl bg-white p-1 text-slate-800'
+  wrapper.className = 'space-y-3 rounded-2xl bg-white p-1 text-slate-800 dark:bg-slate-800 dark:text-slate-200'
   let removeVoteButton: HTMLButtonElement | null = null
 
   const title = document.createElement('p')
-  title.className = 'text-sm font-semibold text-slate-900'
+  title.className = 'text-sm font-semibold text-slate-900 dark:text-white'
   title.textContent = location.name
 
   const meta = document.createElement('p')
-  wrapper.className = 'space-y-3 rounded-2xl bg-white p-1 text-slate-800 dark:bg-slate-800 dark:text-slate-200'
-  meta.textContent = `Votes: ${location.voteCount}`
-  title.className = 'text-sm font-semibold text-slate-900 dark:text-white'
-  const creator = document.createElement('p')
-  creator.className = 'text-xs text-slate-500'
-  creator.textContent = `Suggested by ${location.createdByName}`
   meta.className = 'text-xs text-slate-500 dark:text-slate-400'
+  meta.textContent = `Votes: ${location.voteCount}`
+
+  const creator = document.createElement('p')
+  creator.className = 'text-xs text-slate-500 dark:text-slate-400'
+  creator.textContent = `Suggested by ${location.createdByName}`
+
   const voteButton = document.createElement('button')
   voteButton.type = 'button'
   voteButton.className = 'w-full rounded-full bg-violet-600 px-3 py-2 text-xs font-semibold text-white transition hover:bg-violet-500 disabled:bg-violet-300'
-  creator.className = 'text-xs text-slate-500 dark:text-slate-400'
+  voteButton.textContent = location.votedByCurrentUser ? 'Already voted' : 'Vote for location'
   voteButton.disabled = location.votedByCurrentUser
   voteButton.setAttribute('data-action', 'vote')
 
   voteButton.className = 'w-full rounded-full bg-violet-600 px-3 py-2 text-xs font-semibold text-white transition hover:bg-violet-500 disabled:bg-violet-300 dark:bg-violet-700 dark:hover:bg-violet-600'
+
+  wrapper.append(title, meta, creator, voteButton)
 
   if (location.votedByCurrentUser) {
     removeVoteButton = document.createElement('button')
@@ -74,6 +78,7 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
   const markersRef = useRef<Map<number, mapboxgl.Marker>>(new Map())
   const queryClient = useQueryClient()
   const { backendUser } = useAuthSession()
+  const { isDark } = useDarkMode()
   const [mapReady, setMapReady] = useState(false)
   const [mapError, setMapError] = useState<string | null>(null)
   const [draftPoint, setDraftPoint] = useState<{ lng: number; lat: number } | null>(null)
@@ -177,7 +182,7 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
     }
 
     if (!MAPBOX_TOKEN) {
-      setMapError('Map is not configured. Set VITE_MAPBOX_TOKEN in frontend/.env.local and restart Vite.')
+      setMapError('Map is not configured. Set VITE_MAPBOX_TOKEN in frontend/.env and restart Vite.')
       return
     }
 
@@ -190,7 +195,7 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
       mapboxgl.accessToken = MAPBOX_TOKEN
       const mapInstance = new mapboxgl.Map({
         container: mapContainer.current,
-        style: 'mapbox://styles/mapbox/dark-v11',
+        style: isDark ? 'mapbox://styles/mapbox/dark-v11' : 'mapbox://styles/mapbox/streets-v12',
         center: [18.0686, 59.3293],
         zoom: 12,
       })
@@ -222,6 +227,14 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
       return
     }
   }, [hasCourse])
+
+  useEffect(() => {
+    if (!map.current) {
+      return
+    }
+
+    map.current.setStyle(isDark ? 'mapbox://styles/mapbox/dark-v11' : 'mapbox://styles/mapbox/streets-v12')
+  }, [isDark])
 
   const selectedLocation = selectedLocationId
     ? (locationsQuery.data ?? []).find((location) => location.id === selectedLocationId) ?? null
@@ -327,7 +340,7 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
   }
 
   return (
-    <div className="relative h-full w-full overflow-hidden rounded-3xl bg-slate-950">
+    <div className="relative h-full w-full overflow-hidden rounded-3xl bg-slate-100 transition-colors dark:bg-slate-950">
       <div ref={mapContainer} className="absolute inset-0" />
 
       {mapError && (
@@ -341,14 +354,14 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
 
       <div className="pointer-events-none absolute left-4 top-4 z-10 max-w-sm space-y-3">
         {!hasAuthToken ? (
-          <div className="rounded-2xl border border-amber-200 bg-amber-50/95 px-4 py-3 text-sm text-amber-800 shadow-2xl backdrop-blur">
+          <div className="rounded-2xl border border-amber-200 bg-amber-50/95 px-4 py-3 text-sm text-amber-800 shadow-2xl backdrop-blur dark:border-amber-900/40 dark:bg-amber-950/70 dark:text-amber-200">
             Sign in with Clerk to load afterwork locations.
           </div>
         ) : null}
 
-        <div className="rounded-2xl border border-white/10 bg-slate-950/85 px-4 py-3 text-white shadow-2xl backdrop-blur">
+        <div className="rounded-2xl border border-slate-200 bg-white/90 px-4 py-3 text-slate-900 shadow-2xl backdrop-blur dark:border-white/10 dark:bg-slate-950/85 dark:text-white">
           <p className="text-xs font-semibold uppercase tracking-[0.3em] text-violet-300">Afterwork Locations</p>
-          <p className="mt-2 text-sm text-slate-200">
+          <p className="mt-2 text-sm text-slate-600 dark:text-slate-200">
             Click the map to suggest a new location. Click a marker to vote or remove your vote.
           </p>
         </div>
@@ -359,18 +372,18 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
           </div>
         ) : null}
 
-        <div className="rounded-2xl border border-white/10 bg-slate-950/85 px-4 py-3 text-white shadow-2xl backdrop-blur">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-violet-300">Winning Location</p>
+        <div className="rounded-2xl border border-slate-200 bg-white/90 px-4 py-3 text-slate-900 shadow-2xl backdrop-blur dark:border-white/10 dark:bg-slate-950/85 dark:text-white">
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-violet-500 dark:text-violet-300">Winning Location</p>
           {winnerQuery.isLoading ? (
-            <p className="mt-2 text-sm text-slate-300">Calculating winner...</p>
+            <p className="mt-2 text-sm text-slate-500 dark:text-slate-300">Calculating winner...</p>
           ) : winnerQuery.data ? (
             <div className="mt-2 space-y-1">
-              <p className="text-base font-semibold text-white">{winnerQuery.data.name}</p>
-              <p className="text-sm text-slate-300">{winnerQuery.data.voteCount} votes</p>
-              <p className="text-xs text-slate-400">Suggested by {winnerQuery.data.createdByName}</p>
+              <p className="text-base font-semibold text-slate-900 dark:text-white">{winnerQuery.data.name}</p>
+              <p className="text-sm text-slate-600 dark:text-slate-300">{winnerQuery.data.voteCount} votes</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Suggested by {winnerQuery.data.createdByName}</p>
             </div>
           ) : (
-            <p className="mt-2 text-sm text-slate-300">No votes yet.</p>
+            <p className="mt-2 text-sm text-slate-500 dark:text-slate-300">No votes yet.</p>
           )}
         </div>
       </div>
@@ -378,7 +391,9 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
       {feedback && (
         <div
           className={`absolute right-4 top-4 z-10 rounded-2xl px-4 py-3 text-sm font-medium shadow-xl backdrop-blur ${
-            feedback.type === 'success' ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'
+            feedback.type === 'success'
+              ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-200'
+              : 'bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-200'
           }`}
         >
           {feedback.message}
@@ -388,20 +403,20 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
       {draftPoint && (
         <form
           onSubmit={handleCreateLocation}
-          className="absolute bottom-4 left-4 z-10 w-[calc(100%-2rem)] max-w-sm rounded-3xl border border-white/10 bg-white/95 p-4 shadow-2xl backdrop-blur"
+          className="absolute bottom-4 left-4 z-10 w-[calc(100%-2rem)] max-w-sm rounded-3xl border border-slate-200 bg-white/95 p-4 shadow-2xl backdrop-blur dark:border-slate-700/70 dark:bg-slate-900/95"
         >
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-violet-500">New Suggestion</p>
-          <p className="mt-2 text-sm text-slate-500">
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-violet-500 dark:text-violet-300">New Suggestion</p>
+          <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
             {draftPoint.lat.toFixed(4)}, {draftPoint.lng.toFixed(4)}
           </p>
 
           <label className="mt-3 block">
-            <span className="mb-1 block text-sm font-medium text-slate-700">Location name</span>
+            <span className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200">Location name</span>
             <input
               value={locationName}
               onChange={(event) => setLocationName(event.target.value)}
               placeholder="Kaffebaren, rooftop bar, ..."
-              className="w-full rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm outline-none focus:border-violet-400 focus:ring-4 focus:ring-violet-200/60"
+              className="w-full rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm outline-none focus:border-violet-400 focus:ring-4 focus:ring-violet-200/60 dark:border-violet-900/50 dark:bg-slate-950 dark:text-slate-100 dark:placeholder-slate-500 dark:focus:border-violet-600 dark:focus:ring-violet-500/30"
             />
           </label>
 
@@ -409,14 +424,14 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
             <button
               type="submit"
               disabled={createMutation.isPending}
-              className="flex-1 rounded-full bg-violet-600 px-4 py-3 text-sm font-semibold text-white hover:bg-violet-500 disabled:bg-violet-300"
+              className="flex-1 rounded-full bg-violet-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-violet-500 disabled:bg-violet-300 dark:bg-violet-700 dark:hover:bg-violet-600"
             >
               {createMutation.isPending ? 'Saving...' : 'Save suggestion'}
             </button>
             <button
               type="button"
               onClick={() => setDraftPoint(null)}
-              className="rounded-full border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+              className="rounded-full border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700"
             >
               Cancel
             </button>
@@ -425,11 +440,11 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
       )}
 
       {selectedLocation && (
-        <div className="absolute bottom-4 left-4 z-10 w-[calc(100%-2rem)] max-w-sm rounded-3xl border border-white/10 bg-white/95 p-4 shadow-2xl backdrop-blur">
+        <div className="absolute bottom-4 left-4 z-10 w-[calc(100%-2rem)] max-w-sm rounded-3xl border border-slate-200 bg-white/95 p-4 shadow-2xl backdrop-blur dark:border-slate-700/70 dark:bg-slate-900/95">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-violet-500">Selected Location</p>
-              <h3 className="mt-2 text-lg font-bold text-slate-900">{selectedLocation.name}</h3>
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-violet-500 dark:text-violet-300">Selected Location</p>
+              <h3 className="mt-2 text-lg font-bold text-slate-900 dark:text-white">{selectedLocation.name}</h3>
             </div>
             <button
               type="button"
@@ -437,13 +452,13 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
                 setSelectedLocationId(null)
                 setSelectedLocationName('')
               }}
-              className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50"
+              className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
             >
               Close
             </button>
           </div>
 
-          <div className="mt-3 grid gap-2 rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-600">
+          <div className="mt-3 grid gap-2 rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-600 dark:bg-slate-800/80 dark:text-slate-300">
             <p>Votes: {selectedLocation.voteCount}</p>
             <p>Suggested by: {selectedLocation.createdByName}</p>
             <p>
@@ -455,11 +470,11 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
             {canManageSelectedLocation ? (
               <form onSubmit={handleUpdateLocation} className="space-y-3">
                 <label className="block">
-                  <span className="mb-1 block text-sm font-medium text-slate-700">Rename location</span>
+                  <span className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200">Rename location</span>
                   <input
                     value={selectedLocationName}
                     onChange={(event) => setSelectedLocationName(event.target.value)}
-                    className="w-full rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm outline-none focus:border-violet-400 focus:ring-4 focus:ring-violet-200/60"
+                    className="w-full rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm outline-none focus:border-violet-400 focus:ring-4 focus:ring-violet-200/60 dark:border-violet-900/50 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-violet-600 dark:focus:ring-violet-500/30"
                   />
                 </label>
 
@@ -467,7 +482,7 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
                   <button
                     type="submit"
                     disabled={updateMutation.isPending}
-                    className="flex-1 rounded-full bg-violet-600 px-4 py-3 text-sm font-semibold text-white hover:bg-violet-500 disabled:bg-violet-300"
+                    className="flex-1 rounded-full bg-violet-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-violet-500 disabled:bg-violet-300 dark:bg-violet-700 dark:hover:bg-violet-600"
                   >
                     {updateMutation.isPending ? 'Saving...' : 'Save changes'}
                   </button>
@@ -475,14 +490,14 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
                     type="button"
                     onClick={() => deleteMutation.mutate(selectedLocation.id)}
                     disabled={deleteMutation.isPending}
-                    className="rounded-full border border-rose-200 bg-white px-4 py-3 text-sm font-semibold text-rose-700 hover:bg-rose-50 disabled:opacity-60"
+                    className="rounded-full border border-rose-200 bg-white px-4 py-3 text-sm font-semibold text-rose-700 transition hover:bg-rose-50 disabled:opacity-60 dark:border-rose-900/50 dark:bg-slate-800 dark:text-rose-300 dark:hover:bg-rose-950/40"
                   >
                     {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
                   </button>
                 </div>
               </form>
             ) : (
-              <p className="text-sm text-slate-600">You can vote on this location, but only the creator or an admin can edit it.</p>
+              <p className="text-sm text-slate-600 dark:text-slate-300">You can vote on this location, but only the creator or an admin can edit it.</p>
             )}
 
             <div className="flex gap-2">
@@ -490,7 +505,7 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
                 type="button"
                 onClick={() => voteMutation.mutate(selectedLocation.id)}
                 disabled={selectedLocation.votedByCurrentUser || voteMutation.isPending}
-                className="flex-1 rounded-full bg-violet-600 px-4 py-3 text-sm font-semibold text-white hover:bg-violet-500 disabled:bg-violet-300"
+                className="flex-1 rounded-full bg-violet-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-violet-500 disabled:bg-violet-300 dark:bg-violet-700 dark:hover:bg-violet-600"
               >
                 {selectedLocation.votedByCurrentUser ? 'Already voted' : voteMutation.isPending ? 'Voting...' : 'Vote'}
               </button>
@@ -499,7 +514,7 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
                   type="button"
                   onClick={() => removeVoteMutation.mutate(selectedLocation.id)}
                   disabled={removeVoteMutation.isPending}
-                  className="rounded-full border border-violet-200 bg-white px-4 py-3 text-sm font-semibold text-violet-700 hover:bg-violet-50 disabled:opacity-60"
+                  className="rounded-full border border-violet-200 bg-white px-4 py-3 text-sm font-semibold text-violet-700 transition hover:bg-violet-50 disabled:opacity-60 dark:border-violet-900/50 dark:bg-slate-800 dark:text-violet-300 dark:hover:bg-slate-700"
                 >
                   {removeVoteMutation.isPending ? 'Removing...' : 'Remove vote'}
                 </button>
@@ -509,9 +524,9 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
         </div>
       )}
 
-      <div className="absolute bottom-4 right-4 z-10 rounded-2xl border border-white/10 bg-slate-950/85 px-4 py-3 text-sm text-slate-200 shadow-2xl backdrop-blur">
-        <p className="font-medium text-white">{locationsQuery.data?.length ?? 0} suggestions</p>
-        <p className="mt-1 text-xs text-slate-400">Bearer token required for fetch, suggest, vote, and remove vote.</p>
+      <div className="absolute bottom-4 right-4 z-10 rounded-2xl border border-slate-200 bg-white/90 px-4 py-3 text-sm text-slate-700 shadow-2xl backdrop-blur dark:border-white/10 dark:bg-slate-950/85 dark:text-slate-200">
+        <p className="font-medium text-slate-900 dark:text-white">{locationsQuery.data?.length ?? 0} suggestions</p>
+        <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Bearer token required for fetch, suggest, vote, and remove vote.</p>
       </div>
     </div>
   )

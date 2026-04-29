@@ -6,23 +6,23 @@ export function DarkModeToggle() {
   return (
     <button
       onClick={toggleDarkMode}
-      className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700"
-      aria-label="Toggle dark mode"
+      role="switch"
+      aria-checked={isDark}
+      className="group relative inline-flex h-9 w-16 items-center rounded-full border border-slate-200 bg-white/95 p-1 transition-all duration-300 hover:border-violet-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 dark:border-slate-700 dark:bg-slate-800"
+      aria-label="Toggle theme"
       title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
     >
-      {isDark ? (
-        <svg className="h-5 w-5 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
-          <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
-        </svg>
-      ) : (
-        <svg className="h-5 w-5 text-amber-500" fill="currentColor" viewBox="0 0 20 20">
-          <path
-            fillRule="evenodd"
-            d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4.293 1.707a1 1 0 011.414-1.414l.707.707a1 1 0 11-1.414 1.414l-.707-.707zm2 2a1 1 0 011.414 1.414l-.707.707a1 1 0 11-1.414-1.414l.707-.707zM15 11a4 4 0 11-8 0 4 4 0 018 0zm2.828-1.172a1 1 0 011.414 0l.707.707a1 1 0 11-1.414 1.414l-.707-.707zM5 9a1 1 0 01-1 1H3a1 1 0 110-2h1a1 1 0 011 1zM3.757 14.828a1 1 0 011.414-1.414l.707.707a1 1 0 11-1.414 1.414l-.707-.707zM9 15a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zm4.243.586a1 1 0 01.707 1.414l-.707.707a1 1 0 11-1.414-1.414l.707-.707zM3 11a1 1 0 100-2H2a1 1 0 000 2h1z"
-            clipRule="evenodd"
-          />
-        </svg>
-      )}
+      <span className="absolute left-2 text-[10px] font-semibold uppercase tracking-wide text-amber-500 dark:text-slate-500">L</span>
+      <span className="absolute right-2 text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-violet-300">D</span>
+      <span
+        className={`inline-flex h-7 w-7 transform items-center justify-center rounded-full text-xs shadow-md transition-all duration-300 ${
+          isDark
+            ? 'translate-x-7 bg-violet-600 text-white shadow-violet-900/40'
+            : 'translate-x-0 bg-amber-400 text-slate-900 shadow-amber-500/40'
+        }`}
+      >
+        {isDark ? 'D' : 'L'}
+      </span>
     </button>
   )
 }

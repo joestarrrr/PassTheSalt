@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+:root {
+  --pts-transition-fast: 180ms;
+  --pts-transition-medium: 260ms;
+}
+
 html,
 body,
 #root {
@@ -8,7 +13,7 @@ body,
 
 html {
   color-scheme: light;
-  transition: background-color 200ms ease, color 200ms ease;
+  transition: background-color var(--pts-transition-medium) ease, color var(--pts-transition-medium) ease;
 }
 
 body {
@@ -16,11 +21,41 @@ body {
   min-width: 320px;
   background: #f8fafc;
   color: #0f172a;
-  transition: background-color 200ms ease, color 200ms ease;
+  transition: background-color var(--pts-transition-medium) ease, color var(--pts-transition-medium) ease;
 }
 
 html.dark body {
   background: #020617;
   color: #e2e8f0;
+}
+
+button,
+a,
+input,
+select,
+textarea,
+[role='button'],
+[role='switch'] {
+  transition:
+    background-color var(--pts-transition-fast) ease,
+    border-color var(--pts-transition-fast) ease,
+    color var(--pts-transition-fast) ease,
+    box-shadow var(--pts-transition-fast) ease,
+    transform var(--pts-transition-fast) ease;
+}
+
+:focus-visible {
+  outline: 2px solid #7c3aed;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
