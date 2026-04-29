@@ -267,7 +267,7 @@ export function AfterworkEventsManagement({ apiScope = 'admin', courseId = null 
 
         <div className="mt-6">
           <h3 className="mb-4 text-lg font-bold text-slate-900">Event Locations & Voting</h3>
-          <div className="h-96 rounded-3xl border border-slate-100 overflow-hidden">
+          <div className="h-[55vh] min-h-[22rem] max-h-[44rem] rounded-3xl border border-slate-100 overflow-hidden">
             <MapboxMap courseId={courseId} />
           </div>
         </div>

@@ -6,7 +6,6 @@ import {
   deleteAwLocation,
   createAwLocation,
   getAwLocations,
-  getWinningAwLocation,
   removeAwVote,
   updateAwLocation,
   voteAwLocation,
@@ -100,7 +99,6 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
   const [feedback, setFeedback] = useState<Feedback | null>(null)
   const [selectedLocationId, setSelectedLocationId] = useState<number | null>(null)
   const [selectedLocationName, setSelectedLocationName] = useState('')
-  const [mapDiagnostics, setMapDiagnostics] = useState('Initializing map...')
 
   const authToken = getAuthToken()
   const hasCourse = Boolean(courseId)
@@ -110,13 +108,6 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
   const locationsQuery = useQuery<AwLocation[]>({
     queryKey: ['aw-locations', courseId, authToken],
     queryFn: () => getAwLocations(courseId as number) as Promise<AwLocation[]>,
-    enabled,
-    retry: false,
-  })
-
-  const winnerQuery = useQuery<AwLocation>({
-    queryKey: ['aw-winning-location', courseId, authToken],
-    queryFn: () => getWinningAwLocation(courseId as number) as Promise<AwLocation>,
     enabled,
     retry: false,
   })
@@ -202,7 +193,6 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
 
     try {
       setMapError(null)
-      setMapDiagnostics('Creating map instance...')
       const mapInstance = new mapboxgl.Map({
         container: mapContainer.current,
         // Use an OSM raster style by default so the map works without Mapbox token restrictions.
@@ -221,18 +211,11 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
 
       mapInstance.on('error', (event) => {
         const message = event.error?.message ?? 'Map rendering failed. Check token and network access.'
-        setMapDiagnostics(`Map error: ${message}`)
         setMapError(message)
       })
 
       mapInstance.on('load', () => {
         mapInstance.resize()
-        const container = mapContainer.current
-        const canvas = mapInstance.getCanvas()
-        const bounds = container?.getBoundingClientRect()
-        setMapDiagnostics(
-          `loaded=true styleLoaded=${String(mapInstance.isStyleLoaded())} container=${Math.round(bounds?.width ?? 0)}x${Math.round(bounds?.height ?? 0)} canvas=${canvas?.width ?? 0}x${canvas?.height ?? 0}`,
-        )
       })
 
       const handleResize = () => mapInstance.resize()
@@ -248,12 +231,6 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
       if (typeof ResizeObserver !== 'undefined' && mapContainer.current) {
         resizeObserver = new ResizeObserver(() => {
           mapInstance.resize()
-          const container = mapContainer.current
-          const canvas = mapInstance.getCanvas()
-          const bounds = container?.getBoundingClientRect()
-          setMapDiagnostics(
-            `resized styleLoaded=${String(mapInstance.isStyleLoaded())} container=${Math.round(bounds?.width ?? 0)}x${Math.round(bounds?.height ?? 0)} canvas=${canvas?.width ?? 0}x${canvas?.height ?? 0}`,
-          )
         })
         resizeObserver.observe(mapContainer.current)
       }
@@ -396,45 +373,11 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
         </div>
       )}
 
-      <div className="pointer-events-none absolute left-4 top-4 z-10 max-w-sm space-y-3">
-        {!hasAuthToken ? (
-          <div className="rounded-2xl border border-amber-200 bg-amber-50/95 px-4 py-3 text-sm text-amber-800 shadow-2xl backdrop-blur">
-            Sign in with Clerk to load afterwork locations.
-          </div>
-        ) : null}
-
-        <div className="rounded-2xl border border-slate-200 bg-white/90 px-4 py-3 text-slate-900 shadow-2xl backdrop-blur">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-violet-300">Afterwork Locations</p>
-          <p className="mt-2 text-sm text-slate-600">
-            Click the map to suggest a new location. Click a marker to vote or remove your vote.
-          </p>
+      {locationsQuery.isError ? (
+        <div className="pointer-events-none absolute left-4 top-4 z-20 max-w-sm rounded-2xl border border-rose-200 bg-rose-50/95 px-4 py-3 text-sm text-rose-700 shadow-xl backdrop-blur">
+          {locationsQuery.error instanceof Error ? locationsQuery.error.message : 'Failed to load locations.'}
         </div>
-
-        {locationsQuery.isError ? (
-          <div className="rounded-2xl border border-rose-200 bg-rose-50/95 px-4 py-3 text-sm text-rose-700 shadow-2xl backdrop-blur">
-            {locationsQuery.error instanceof Error ? locationsQuery.error.message : 'Failed to load afterwork locations.'}
-          </div>
-        ) : null}
-
-        <div className="rounded-2xl border border-slate-200 bg-white/90 px-4 py-3 text-slate-900 shadow-2xl backdrop-blur">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-violet-500">Winning Location</p>
-          {winnerQuery.isLoading ? (
-            <p className="mt-2 text-sm text-slate-500">Calculating winner...</p>
-          ) : winnerQuery.data ? (
-            <div className="mt-2 space-y-1">
-              <p className="text-base font-semibold text-slate-900">{winnerQuery.data.name}</p>
-              <p className="text-sm text-slate-600">{winnerQuery.data.voteCount} votes</p>
-              <p className="text-xs text-slate-500">Suggested by {winnerQuery.data.createdByName}</p>
-            </div>
-          ) : (
-            <p className="mt-2 text-sm text-slate-500">No votes yet.</p>
-          )}
-        </div>
-      </div>
-
-      <div className="pointer-events-none absolute right-4 top-4 z-30 max-w-md rounded-xl border border-slate-300 bg-white/90 px-3 py-2 text-[11px] text-slate-700 shadow-lg backdrop-blur">
-        {mapDiagnostics}
-      </div>
+      ) : null}
 
       {feedback && (
         <div
@@ -572,9 +515,8 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
         </div>
       )}
 
-      <div className="absolute bottom-4 right-4 z-10 rounded-2xl border border-slate-200 bg-white/90 px-4 py-3 text-sm text-slate-700 shadow-2xl backdrop-blur">
-        <p className="font-medium text-slate-900">{locationsQuery.data?.length ?? 0} suggestions</p>
-        <p className="mt-1 text-xs text-slate-500">Bearer token required for fetch, suggest, vote, and remove vote.</p>
+      <div className="absolute bottom-4 right-4 z-10 rounded-full border border-slate-200 bg-white/90 px-3 py-1.5 text-xs font-semibold text-slate-800 shadow-lg backdrop-blur">
+        {locationsQuery.data?.length ?? 0}
       </div>
     </div>
   )
