@@ -16,7 +16,7 @@ export function ClassMoodGraph() {
   return (
     <SectionCard label="Analytics" title="Class Mood Over Time">
       <div className="mb-5">
-        <p className="mt-2 text-sm leading-6 text-slate-600">Dummy weekly mood data for now.</p>
+        <p className="mt-2 text-sm leading-6 text-white/50">Dummy weekly mood data for now.</p>
       </div>
 
       <div className="rounded-3xl border border-violet-100 bg-violet-50/70 p-3 sm:p-5">
@@ -33,14 +33,14 @@ export function ClassMoodGraph() {
                       className="w-full rounded-t-2xl bg-violet-500 shadow-[0_10px_20px_rgba(109,40,217,0.20)] transition-all"
                       style={{ height: barHeight }}
                     />
-                    <span className="absolute -top-7 left-1/2 -translate-x-1/2 rounded-full bg-white px-2 py-1 text-xs font-semibold text-slate-700 shadow-sm">
+                    <span className="absolute -top-7 left-1/2 -translate-x-1/2 rounded-full border border-white/10 bg-white/5 px-2 py-1 text-xs font-semibold text-white/70 shadow-sm">
                       {item.rating.toFixed(1)}
                     </span>
                   </div>
                 </div>
 
                 <div className="text-center">
-                  <p className="text-xs font-medium text-slate-700">{item.date}</p>
+                  <p className="text-xs font-medium text-white/60">{item.date}</p>
                 </div>
               </div>
             )
@@ -48,7 +48,7 @@ export function ClassMoodGraph() {
           </div>
         </div>
 
-        <div className="mt-5 flex flex-col gap-1 rounded-2xl bg-white/80 px-4 py-3 text-sm text-slate-600 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-5 flex flex-col gap-1 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white/60 sm:flex-row sm:items-center sm:justify-between">
           <span>Lowest mood: 4.1</span>
           <span>Highest mood: 4.7</span>
         </div>
