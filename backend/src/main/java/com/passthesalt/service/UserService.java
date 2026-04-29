@@ -30,7 +30,7 @@ public class UserService {
                 request.eventDate(),
                 request.createdByUserId()));
 
-        return new UserDTO(event.id(), event.title(), event.location(), event.eventDate(), event.createdByUserId());
+        return new UserDTO(event.getId(), event.getTitle(), event.getLocation(), event.getEventDate(), event.getCreatedByUserId());
     }
 
     public List<UserDTO> getAfterworkEvents() {
@@ -46,7 +46,7 @@ public class UserService {
         validateUserExists(request.createdByUserId());
 
         AfterworkEvent updatedEvent = afterworkEventRepository.save(new AfterworkEvent(
-                existingEvent.id(),
+            existingEvent.getId(),
                 request.title().trim(),
                 request.location().trim(),
                 request.eventDate(),
@@ -67,6 +67,6 @@ public class UserService {
     }
 
     private UserDTO toUserDTO(AfterworkEvent event) {
-        return new UserDTO(event.id(), event.title(), event.location(), event.eventDate(), event.createdByUserId());
+        return new UserDTO(event.getId(), event.getTitle(), event.getLocation(), event.getEventDate(), event.getCreatedByUserId());
     }
 }

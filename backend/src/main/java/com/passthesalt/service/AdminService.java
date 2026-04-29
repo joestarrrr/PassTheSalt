@@ -86,7 +86,7 @@ public class AdminService {
                 validateUserExists(request.createdByUserId());
 
                 AfterworkEvent updatedEvent = afterworkEventRepository.save(new AfterworkEvent(
-                                existingEvent.id(),
+                                existingEvent.getId(),
                                 request.title().trim(),
                                 request.location().trim(),
                                 request.eventDate(),
@@ -109,10 +109,10 @@ public class AdminService {
 
         private AfterworkEventDTO toAfterworkEventDTO(AfterworkEvent event) {
                 return new AfterworkEventDTO(
-                                event.id(),
-                                event.title(),
-                                event.location(),
-                                event.eventDate(),
-                                event.createdByUserId());
+                                event.getId(),
+                                event.getTitle(),
+                                event.getLocation(),
+                                event.getEventDate(),
+                                event.getCreatedByUserId());
         }
 }
