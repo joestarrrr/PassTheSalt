@@ -97,7 +97,13 @@ public class UserAssignmentService {
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
 
         if (user.getCourseId() == null) {
-            throw new RuntimeException("User is not assigned to a course");
+            return new UserCourseContextDTO(
+                    user.getId(),
+                    null,
+                    null,
+                    null,
+                    null,
+                    List.of());
         }
 
         Course course = courseRepository.findById(user.getCourseId())
