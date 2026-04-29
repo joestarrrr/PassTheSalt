@@ -11,10 +11,17 @@ type RoleGateProps = {
 
 function LoadingState({ message }: { message: string }) {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[radial-gradient(circle_at_top,_#faf5ff_0%,_#f5f3ff_30%,_#eef2ff_100%)] px-6 text-center text-slate-700">
-      <div className="max-w-md rounded-3xl border border-white/70 bg-white/85 p-6 shadow-[0_20px_60px_rgba(109,40,217,0.10)] backdrop-blur-sm">
-        <p className="text-sm font-semibold uppercase tracking-[0.3em] text-violet-500">Pass the Salt</p>
-        <p className="mt-3 text-base font-medium text-slate-900">{message}</p>
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#0c0618] px-6">
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute -left-48 -top-48 h-[600px] w-[600px] rounded-full bg-violet-900/40 blur-[130px]" />
+        <div className="absolute -right-32 bottom-0 h-[400px] w-[400px] rounded-full bg-fuchsia-900/25 blur-[110px]" />
+      </div>
+      <div className="relative z-10 flex flex-col items-center gap-4 text-center">
+        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-600 shadow-lg shadow-violet-500/40">
+          <span className="text-base font-black text-white">PS</span>
+        </div>
+        <span className="h-5 w-5 animate-spin rounded-full border-2 border-white/15 border-t-violet-400" />
+        <p className="max-w-xs text-sm font-medium text-white/55">{message}</p>
       </div>
     </div>
   )
