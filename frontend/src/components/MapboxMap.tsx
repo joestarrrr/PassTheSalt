@@ -229,8 +229,9 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
         mapInstance.resize()
         const container = mapContainer.current
         const canvas = mapInstance.getCanvas()
+        const bounds = container?.getBoundingClientRect()
         setMapDiagnostics(
-          `loaded=true styleLoaded=${String(mapInstance.isStyleLoaded())} container=${container?.clientWidth ?? 0}x${container?.clientHeight ?? 0} canvas=${canvas?.width ?? 0}x${canvas?.height ?? 0}`,
+          `loaded=true styleLoaded=${String(mapInstance.isStyleLoaded())} container=${Math.round(bounds?.width ?? 0)}x${Math.round(bounds?.height ?? 0)} canvas=${canvas?.width ?? 0}x${canvas?.height ?? 0}`,
         )
       })
 
@@ -249,8 +250,9 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
           mapInstance.resize()
           const container = mapContainer.current
           const canvas = mapInstance.getCanvas()
+          const bounds = container?.getBoundingClientRect()
           setMapDiagnostics(
-            `resized styleLoaded=${String(mapInstance.isStyleLoaded())} container=${container?.clientWidth ?? 0}x${container?.clientHeight ?? 0} canvas=${canvas?.width ?? 0}x${canvas?.height ?? 0}`,
+            `resized styleLoaded=${String(mapInstance.isStyleLoaded())} container=${Math.round(bounds?.width ?? 0)}x${Math.round(bounds?.height ?? 0)} canvas=${canvas?.width ?? 0}x${canvas?.height ?? 0}`,
           )
         })
         resizeObserver.observe(mapContainer.current)
@@ -382,8 +384,8 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
   }
 
   return (
-    <div className="relative h-full w-full overflow-hidden rounded-3xl bg-slate-100 transition-colors">
-      <div ref={mapContainer} className="absolute inset-0 z-0" />
+    <div className="relative h-full min-h-[24rem] w-full overflow-hidden rounded-3xl bg-slate-100 transition-colors">
+      <div ref={mapContainer} className="h-full w-full" />
 
       {mapError && (
         <div className="absolute inset-0 z-20 flex items-center justify-center bg-slate-950/90 px-6 text-center text-sm text-rose-200">
