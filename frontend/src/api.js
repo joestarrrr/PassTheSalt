@@ -1,5 +1,17 @@
 import { getSessionToken } from './auth/sessionToken.ts'
 
+// Get backend URL from Vite's define global or fallback to relative path
+const BACKEND_URL = typeof __BACKEND_URL__ !== 'undefined' ? __BACKEND_URL__ : ''
+
+function getApiUrl(path) {
+  // In dev with proxy: use relative path /api/*
+  // In production: use full backend URL from env
+  if (BACKEND_URL && BACKEND_URL !== '') {
+    return `${BACKEND_URL}${path}`
+  }
+  return path
+}
+
 async function parseResponse(response, fallbackMessage) {
   if (!response.ok) {
     const message = (await response.text()).trim()
@@ -41,7 +53,8 @@ function withAuthHeaders(headers = {}) {
 }
 
 function authFetch(input, init = {}) {
-  return fetch(input, {
+  const url = getApiUrl(input)
+  return fetch(url, {
     ...init,
     headers: withAuthHeaders(init.headers || {}),
   })
@@ -224,7 +237,8 @@ export const getUserCourseContext = async (userId) => {
 }
 
 export const getCurrentUser = async (authToken, clerkEmail = '') => {
-  const response = await fetch('/api/auth/me', {
+  const url = getApiUrl('/api/auth/me')
+  const response = await fetch(url, {
     headers: {
       Authorization: `Bearer ${authToken}`,
       ...(clerkEmail ? { 'X-Clerk-Email': clerkEmail } : {}),

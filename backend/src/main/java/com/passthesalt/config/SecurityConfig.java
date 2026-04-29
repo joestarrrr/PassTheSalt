@@ -31,7 +31,8 @@ public class SecurityConfig {
             "http://127.0.0.1:3001",
             "http://localhost:5173",
             "http://127.0.0.1:5173",
-            "https://passthesalt-production.up.railway.app");
+            "https://passthesalt-production.up.railway.app",
+            "https://joestarrrr.github.io");
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
