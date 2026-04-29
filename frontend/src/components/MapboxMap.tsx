@@ -236,12 +236,32 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
       const handleResize = () => mapInstance.resize()
       window.addEventListener('resize', handleResize)
 
+      // Route/layout transitions can initialize the map before the container has final dimensions.
+      // Force a few resizes after mount and observe container size changes to avoid an empty gray canvas.
+      const rafId = requestAnimationFrame(() => mapInstance.resize())
+      const timeoutId = window.setTimeout(() => mapInstance.resize(), 300)
+      const timeoutId2 = window.setTimeout(() => mapInstance.resize(), 1000)
+
+      let resizeObserver: ResizeObserver | null = null
+      if (typeof ResizeObserver !== 'undefined' && mapContainer.current) {
+        resizeObserver = new ResizeObserver(() => {
+          mapInstance.resize()
+        })
+        resizeObserver.observe(mapContainer.current)
+      }
+
       map.current = mapInstance
       setMapReady(true)
 
       return () => {
         popupRef.current?.remove()
         window.removeEventListener('resize', handleResize)
+        if (resizeObserver) {
+          resizeObserver.disconnect()
+        }
+        cancelAnimationFrame(rafId)
+        window.clearTimeout(timeoutId)
+        window.clearTimeout(timeoutId2)
         mapInstance.remove()
         map.current = null
         setMapReady(false)
