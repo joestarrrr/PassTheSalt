@@ -1,4 +1,5 @@
 import { useAuth } from '@clerk/clerk-react'
+import { router } from '../router/appRouter'
 import { clearSessionToken } from './sessionToken'
 
 type LogoutButtonProps = {
@@ -16,7 +17,7 @@ export function LogoutButton({
   const handleClick = async () => {
     clearSessionToken()
     await signOut()
-    window.location.replace('/')
+    void router.navigate({ to: '/' })
   }
 
   return (

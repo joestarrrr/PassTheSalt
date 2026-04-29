@@ -1,6 +1,7 @@
 import { type ReactNode, useEffect } from 'react'
 import { useAuthSession } from './AuthSession'
 import { getRoleHome } from './roleRoutes'
+import { router } from '../router/appRouter'
 import type { AppRole } from '../types/auth'
 
 type RoleGateProps = {
@@ -28,16 +29,16 @@ export function RoleGate({ role, children }: RoleGateProps) {
     }
 
     if (!isSignedIn) {
-      if (window.location.pathname !== '/login') {
-        window.location.replace('/login')
+      if (router.state.location.pathname !== '/login') {
+        void router.navigate({ to: '/login' })
       }
       return
     }
 
     if (backendUser?.role && backendUser.role !== role) {
       const redirectTo = getRoleHome(backendUser.role)
-      if (window.location.pathname !== redirectTo) {
-        window.location.replace(redirectTo)
+      if (router.state.location.pathname !== redirectTo) {
+        void router.navigate({ to: redirectTo })
       }
     }
   }, [backendUser?.role, isClerkLoaded, isReady, isSignedIn, role])

@@ -3,13 +3,14 @@ import { SignIn, SignedIn, SignedOut, UserButton } from '@clerk/clerk-react'
 import { useEffect } from 'react'
 import { useAuthSession } from '../auth/AuthSession'
 import { getRoleHome } from '../auth/roleRoutes'
+import { router } from '../router/appRouter'
 
 export function LoginPage() {
   const { backendUser, backendError, isClerkLoaded, isSignedIn, refreshBackendUser } = useAuthSession()
 
   useEffect(() => {
     if (backendUser?.role) {
-      window.location.replace(getRoleHome(backendUser.role))
+      void router.navigate({ to: getRoleHome(backendUser.role) })
     }
   }, [backendUser?.role])
 

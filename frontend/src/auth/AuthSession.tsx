@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useAuth, useUser } from '@clerk/clerk-react'
+import { router } from '../router/appRouter'
 import { getCurrentUser } from '../api.js'
 import { clearSessionToken, setSessionToken } from './sessionToken'
 import { getRoleHome } from './roleRoutes'
@@ -76,10 +77,11 @@ export function AuthSessionProvider({ children }: { children: ReactNode }) {
     }
 
     const redirectTargets = new Set(['/login', '/'])
-    if (redirectTargets.has(window.location.pathname)) {
+    const currentPath = router.state.location.pathname
+    if (redirectTargets.has(currentPath)) {
       const redirectTo = getRoleHome(backendUser.role)
-      if (window.location.pathname !== redirectTo) {
-        window.location.replace(redirectTo)
+      if (currentPath !== redirectTo) {
+        void router.navigate({ to: redirectTo })
       }
     }
   }, [backendUser?.role, isLoaded, isSignedIn])
