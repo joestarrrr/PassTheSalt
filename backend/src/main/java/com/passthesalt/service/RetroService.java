@@ -1,6 +1,7 @@
 package com.passthesalt.service;
 
 import com.passthesalt.dto.RetroDTO;
+import com.passthesalt.exception.ResourceNotFoundException;
 import com.passthesalt.model.Retro;
 import com.passthesalt.repository.RetroRepository;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,26 @@ public class RetroService {
 
         Retro savedRetro = retroRepository.save(retro);
         return mapRetroToDTO(savedRetro);
+    }
+
+    public RetroDTO updateRetro(Long retroId, RetroDTO retroDTO) {
+        Retro existing = retroRepository.findById(retroId)
+                .orElseThrow(() -> new ResourceNotFoundException("Retro not found with id " + retroId));
+
+        if (!existing.getUserId().equals(retroDTO.userId())) {
+            throw new IllegalArgumentException("You can only edit your own retro");
+        }
+
+        // Keep ownership/day metadata immutable and only update reflection fields.
+        existing.setStartOfDay(retroDTO.startOfDay());
+        existing.setWorkedWell(retroDTO.workedWell());
+        existing.setLearned(retroDTO.learned());
+        existing.setImprove(retroDTO.improve());
+        existing.setRating(retroDTO.rating());
+        existing.setLectureName(retroDTO.lectureName());
+
+        Retro updated = retroRepository.save(existing);
+        return mapRetroToDTO(updated);
     }
 
     public List<RetroDTO> getRetrosByCourseDayAndMobGroup(Long courseDayId, Long mobGroupId) {

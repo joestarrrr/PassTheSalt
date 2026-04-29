@@ -290,6 +290,18 @@ export const submitRetro = async (retroData) => {
   return parseResponse(response, 'Failed to submit retro')
 }
 
+export const updateRetro = async (retroId, retroData) => {
+  const response = await authFetch(`/api/retros/${retroId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(retroData),
+  })
+
+  return parseResponse(response, 'Failed to update retro')
+}
+
 export const getRetrosByCourse = async (courseId) => {
   const response = await authFetch(`/api/retros/course/${courseId}`)
   return parseResponse(response, 'Failed to load retros')

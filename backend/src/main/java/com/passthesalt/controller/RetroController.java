@@ -26,6 +26,12 @@ public class RetroController {
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
+    @PutMapping("/{retroId}")
+    public ResponseEntity<RetroDTO> updateRetro(@PathVariable Long retroId, @Valid @RequestBody RetroDTO retroDTO) {
+        RetroDTO result = retroService.updateRetro(retroId, retroDTO);
+        return ResponseEntity.ok(result);
+    }
+
     @GetMapping("/course/{courseId}")
     public ResponseEntity<List<RetroDTO>> getRetrosByCourse(@PathVariable Long courseId) {
         List<RetroDTO> retros = retroService.getRetrosByCourse(courseId);

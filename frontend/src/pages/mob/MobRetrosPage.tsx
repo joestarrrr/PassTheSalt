@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { getRetrosByCourse, getUserCourseContext, submitRetro } from '../../api'
+import { getRetrosByCourse, getUserCourseContext, submitRetro, updateRetro } from '../../api'
 import type { CourseDay, UserCourseContext } from '../../types/course'
 import { useAuthSession } from '../../auth/AuthSession'
 import { MobLayout } from '../../layout/MobLayout'
@@ -45,6 +45,7 @@ export function MobRetrosPage() {
   const [improve, setImprove] = useState('')
   const [rating, setRating] = useState<number>(3)
   const [lectureName, setLectureName] = useState('')
+  const [isEditingExisting, setIsEditingExisting] = useState(false)
   const [feedback, setFeedback] = useState<Feedback>(null)
   const [daysPage, setDaysPage] = useState(0)
   const userId = backendUser?.id ?? null
@@ -75,6 +76,20 @@ export function MobRetrosPage() {
     },
   })
 
+  const updateMutation = useMutation<unknown, Error, { retroId: number; payload: RetroInput }>({
+    mutationFn: ({ retroId, payload }) => updateRetro(retroId, payload),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['retros'] })
+      void queryClient.invalidateQueries({ queryKey: ['retros', 'course', courseId] })
+      setIsEditingExisting(false)
+      setFeedback({ type: 'success', message: '✓ Retro updated successfully!' })
+      setTimeout(() => setFeedback(null), 5000)
+    },
+    onError: (error) => {
+      setFeedback({ type: 'error', message: error instanceof Error ? error.message : 'Failed to update retro' })
+    },
+  })
+
   const courseId = userContextQuery.data?.courseId ?? backendUser?.courseId ?? null
   const mobGroupId = userContextQuery.data?.mobGroupId ?? backendUser?.mobGroupId ?? null
   const isNotAssigned = !userContextQuery.isLoading && (!courseId || !mobGroupId)
@@ -99,6 +114,15 @@ export function MobRetrosPage() {
 
   const selectedDayRetro = selectedDayId ? myRetrosByDay.get(selectedDayId) ?? null : null
 
+  const fillFormFromRetro = (retro: RetroRecord) => {
+    setStartOfDay(retro.startOfDay ?? '')
+    setWorkedWell(retro.workedWell ?? '')
+    setLearned(retro.learned ?? '')
+    setImprove(retro.improve ?? '')
+    setRating(retro.rating ?? 3)
+    setLectureName(retro.lectureName ?? '')
+  }
+
   const handleSubmitRetro = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
@@ -117,7 +141,7 @@ export function MobRetrosPage() {
       return
     }
 
-    if (selectedDayId && myRetrosByDay.has(selectedDayId)) {
+    if (!isEditingExisting && selectedDayId && myRetrosByDay.has(selectedDayId)) {
       setFeedback({ type: 'error', message: '✅ Retro for this day is already submitted. Click another day or review below.' })
       return
     }
@@ -134,6 +158,11 @@ export function MobRetrosPage() {
       submissionDate: selectedDay?.date || new Date().toISOString().split('T')[0],
       rating,
       lectureName: lectureName || null,
+    }
+
+    if (selectedDayRetro && isEditingExisting) {
+      updateMutation.mutate({ retroId: selectedDayRetro.id, payload: retroData })
+      return
     }
 
     submitMutation.mutate(retroData)
@@ -169,17 +198,21 @@ export function MobRetrosPage() {
             ) : (
               <>
                 <div className="space-y-2 px-6 py-6 sm:px-8">
-                  {paginatedDays.map((day) => (
-                    (() => {
-                      const hasRetro = myRetrosByDay.has(day.id)
-                      return (
+                  {paginatedDays.map((day) => {
+                    const retro = myRetrosByDay.get(day.id)
+                    const hasRetro = Boolean(retro)
+
+                    return (
                     <button
                       onClick={() => {
                         setSelectedDayId(day.id)
                         setSelectedDay(day)
                         setFeedback(null)
+                        setIsEditingExisting(false)
 
-                        if (!myRetrosByDay.has(day.id)) {
+                        if (retro) {
+                          fillFormFromRetro(retro)
+                        } else {
                           setStartOfDay('')
                           setWorkedWell('')
                           setLearned('')
@@ -211,9 +244,8 @@ export function MobRetrosPage() {
                       </div>
                       <div className="text-xs opacity-80">{day.date}</div>
                     </button>
-                      )
-                    })()
-                  ))}
+                    )
+                  })}
                 </div>
 
                 {totalPages > 1 && (
@@ -273,7 +305,7 @@ export function MobRetrosPage() {
                     <p className="mt-1 text-xs text-slate-600">{selectedDay?.date}</p>
                   </div>
 
-                  {selectedDayRetro ? (
+                  {selectedDayRetro && !isEditingExisting ? (
                     <div className="space-y-4 rounded-2xl border border-emerald-200 bg-emerald-50/60 p-4 text-sm text-slate-700">
                       <p className="font-semibold text-emerald-800">✅ This day is completed. You can review your submitted retro below.</p>
 
@@ -307,6 +339,18 @@ export function MobRetrosPage() {
                         <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Rating</p>
                         <p className="text-sm font-bold text-violet-700">{'★'.repeat(selectedDayRetro.rating)}{'☆'.repeat(5 - selectedDayRetro.rating)}</p>
                       </div>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          fillFormFromRetro(selectedDayRetro)
+                          setIsEditingExisting(true)
+                          setFeedback(null)
+                        }}
+                        className="w-full rounded-full bg-violet-600 px-5 py-3 text-sm font-semibold text-white hover:bg-violet-500"
+                      >
+                        Edit Retro
+                      </button>
                     </div>
                   ) : (
                     <>
@@ -384,13 +428,33 @@ export function MobRetrosPage() {
                         </div>
                       </label>
 
-                      <button
-                        type="submit"
-                        disabled={submitMutation.isPending}
-                        className="w-full rounded-full bg-gradient-to-r from-violet-600 to-violet-500 px-6 py-4 text-sm font-bold text-white shadow-lg transition hover:shadow-xl disabled:opacity-70"
-                      >
-                        {submitMutation.isPending ? '⏳ Submitting...' : '✓ Submit Retro'}
-                      </button>
+                      <div className="flex flex-col gap-2 sm:flex-row">
+                        <button
+                          type="submit"
+                          disabled={submitMutation.isPending || updateMutation.isPending}
+                          className="w-full rounded-full bg-gradient-to-r from-violet-600 to-violet-500 px-6 py-4 text-sm font-bold text-white shadow-lg transition hover:shadow-xl disabled:opacity-70"
+                        >
+                          {isEditingExisting
+                            ? (updateMutation.isPending ? '⏳ Saving...' : '✓ Save Changes')
+                            : (submitMutation.isPending ? '⏳ Submitting...' : '✓ Submit Retro')}
+                        </button>
+
+                        {isEditingExisting ? (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setIsEditingExisting(false)
+                              if (selectedDayRetro) {
+                                fillFormFromRetro(selectedDayRetro)
+                              }
+                              setFeedback(null)
+                            }}
+                            className="w-full rounded-full bg-white px-6 py-4 text-sm font-semibold text-violet-700 ring-1 ring-inset ring-violet-200 hover:bg-violet-50"
+                          >
+                            Cancel
+                          </button>
+                        ) : null}
+                      </div>
                     </>
                   )}
                 </>
