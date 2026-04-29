@@ -100,6 +100,7 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
   const [feedback, setFeedback] = useState<Feedback | null>(null)
   const [selectedLocationId, setSelectedLocationId] = useState<number | null>(null)
   const [selectedLocationName, setSelectedLocationName] = useState('')
+  const [mapDiagnostics, setMapDiagnostics] = useState('Initializing map...')
 
   const authToken = getAuthToken()
   const hasCourse = Boolean(courseId)
@@ -201,6 +202,7 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
 
     try {
       setMapError(null)
+      setMapDiagnostics('Creating map instance...')
       const mapInstance = new mapboxgl.Map({
         container: mapContainer.current,
         // Use an OSM raster style by default so the map works without Mapbox token restrictions.
@@ -219,11 +221,17 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
 
       mapInstance.on('error', (event) => {
         const message = event.error?.message ?? 'Map rendering failed. Check token and network access.'
+        setMapDiagnostics(`Map error: ${message}`)
         setMapError(message)
       })
 
       mapInstance.on('load', () => {
         mapInstance.resize()
+        const container = mapContainer.current
+        const canvas = mapInstance.getCanvas()
+        setMapDiagnostics(
+          `loaded=true styleLoaded=${String(mapInstance.isStyleLoaded())} container=${container?.clientWidth ?? 0}x${container?.clientHeight ?? 0} canvas=${canvas?.width ?? 0}x${canvas?.height ?? 0}`,
+        )
       })
 
       const handleResize = () => mapInstance.resize()
@@ -239,6 +247,11 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
       if (typeof ResizeObserver !== 'undefined' && mapContainer.current) {
         resizeObserver = new ResizeObserver(() => {
           mapInstance.resize()
+          const container = mapContainer.current
+          const canvas = mapInstance.getCanvas()
+          setMapDiagnostics(
+            `resized styleLoaded=${String(mapInstance.isStyleLoaded())} container=${container?.clientWidth ?? 0}x${container?.clientHeight ?? 0} canvas=${canvas?.width ?? 0}x${canvas?.height ?? 0}`,
+          )
         })
         resizeObserver.observe(mapContainer.current)
       }
@@ -370,7 +383,7 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
 
   return (
     <div className="relative h-full w-full overflow-hidden rounded-3xl bg-slate-100 transition-colors">
-      <div ref={mapContainer} className="absolute inset-0" />
+      <div ref={mapContainer} className="absolute inset-0 z-0" />
 
       {mapError && (
         <div className="absolute inset-0 z-20 flex items-center justify-center bg-slate-950/90 px-6 text-center text-sm text-rose-200">
@@ -415,6 +428,10 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
             <p className="mt-2 text-sm text-slate-500">No votes yet.</p>
           )}
         </div>
+      </div>
+
+      <div className="pointer-events-none absolute right-4 top-4 z-30 max-w-md rounded-xl border border-slate-300 bg-white/90 px-3 py-2 text-[11px] text-slate-700 shadow-lg backdrop-blur">
+        {mapDiagnostics}
       </div>
 
       {feedback && (
