@@ -33,6 +33,7 @@ function getAuthToken() {
 function buildPopupContent(location: AwLocation) {
   const wrapper = document.createElement('div')
   wrapper.className = 'space-y-3 rounded-2xl bg-white p-1 text-slate-800'
+  let removeVoteButton: HTMLButtonElement | null = null
 
   const title = document.createElement('p')
   title.className = 'text-sm font-semibold text-slate-900'
@@ -56,14 +57,13 @@ function buildPopupContent(location: AwLocation) {
   voteButton.className = 'w-full rounded-full bg-violet-600 px-3 py-2 text-xs font-semibold text-white transition hover:bg-violet-500 disabled:bg-violet-300 dark:bg-violet-700 dark:hover:bg-violet-600'
 
   if (location.votedByCurrentUser) {
-    const removeVoteButton = document.createElement('button')
+    removeVoteButton = document.createElement('button')
     removeVoteButton.type = 'button'
-    removeVoteButton.className = 'w-full rounded-full border border-violet-200 bg-white px-3 py-2 text-xs font-semibold text-violet-700 transition hover:bg-violet-50'
+    removeVoteButton.className = 'w-full rounded-full border border-violet-200 bg-white px-3 py-2 text-xs font-semibold text-violet-700 transition hover:bg-violet-50 dark:border-violet-900/50 dark:bg-slate-700 dark:text-violet-400 dark:hover:bg-slate-600'
     removeVoteButton.textContent = 'Remove vote'
     removeVoteButton.setAttribute('data-action', 'remove-vote')
     wrapper.append(removeVoteButton)
   }
-    removeVoteButton.className = 'w-full rounded-full border border-violet-200 bg-white px-3 py-2 text-xs font-semibold text-violet-700 transition hover:bg-violet-50 dark:border-violet-900/50 dark:bg-slate-700 dark:text-violet-400 dark:hover:bg-slate-600'
   return wrapper
 }
 
