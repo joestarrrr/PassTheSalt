@@ -25,12 +25,12 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig {
 
     private static final List<String> ALLOWED_ORIGINS = List.of(
-            "http://localhost:3000",
-            "http://127.0.0.1:3000",
+            // Local development
             "http://localhost:3001",
-            "http://127.0.0.1:3001",
             "http://localhost:5173",
+            "http://127.0.0.1:3001",
             "http://127.0.0.1:5173",
+            // Production
             "https://passthesalt-production.up.railway.app",
             "https://joestarrrr.github.io");
 
@@ -66,7 +66,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(ALLOWED_ORIGINS);
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Clerk-Email"));
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
