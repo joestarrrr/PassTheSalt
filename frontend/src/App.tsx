@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { getSessionToken } from './auth/sessionToken.ts'
 import './App.css'
 
 const DEFAULT_PROD_BACKEND_URL = 'https://passthesalt-production.up.railway.app'
@@ -24,12 +25,22 @@ function App() {
     const fetchMessage = async () => {
       try {
         setLoading(true)
-        const response = await fetch(API_ROOT_URL)
+        const token = getSessionToken()
+        if (!token) {
+          throw new Error('Missing auth session. Sign in with Clerk to continue.')
+        }
+
+        const response = await fetch(`${API_ROOT_URL}api/auth/me`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`)
         }
-        const data = await response.text()
-        setMessage(data)
+
+        const data = await response.json()
+        setMessage(data.email || data.fullName || 'Authenticated backend response received')
         setError(null)
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred')
