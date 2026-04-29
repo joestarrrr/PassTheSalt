@@ -1,11 +1,22 @@
 import { getSessionToken } from './auth/sessionToken.ts'
 
-// Get backend URL from Vite's define global or fallback to relative path
-const BACKEND_URL = typeof __BACKEND_URL__ !== 'undefined' ? __BACKEND_URL__ : ''
+const DEFAULT_PROD_BACKEND_URL = 'https://passthesalt-production.up.railway.app'
+const IS_LOCAL_HOST =
+  typeof window !== 'undefined' &&
+  (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+
+// In local dev, keep this empty so /api uses Vite proxy.
+// In production, always default to Railway if env define is missing.
+const BACKEND_URL =
+  typeof __BACKEND_URL__ !== 'undefined' && __BACKEND_URL__
+    ? __BACKEND_URL__
+    : IS_LOCAL_HOST
+      ? ''
+      : DEFAULT_PROD_BACKEND_URL
 
 function getApiUrl(path) {
   // In dev with proxy: use relative path /api/*
-  // In production: use full backend URL from env
+  // In production: use explicit backend URL
   if (BACKEND_URL && BACKEND_URL !== '') {
     return `${BACKEND_URL}${path}`
   }

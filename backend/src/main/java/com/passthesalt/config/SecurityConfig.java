@@ -5,9 +5,11 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.oauth2.server.resource.web.DefaultBearerTokenResolver;
 import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
 import org.springframework.security.oauth2.core.OAuth2TokenValidatorResult;
@@ -44,8 +46,11 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .anyRequest().authenticated())
-                .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .bearerTokenResolver(new DefaultBearerTokenResolver())
+                        .jwt(Customizer.withDefaults()));
 
         return http.build();
     }
@@ -55,9 +60,27 @@ public class SecurityConfig {
             @Value("${clerk.frontend-api-url}") String clerkFrontendApiUrl,
             @Value("${clerk.jwks-uri:${clerk.frontend-api-url}/.well-known/jwks.json}") String clerkJwksUri) {
         NimbusJwtDecoder decoder = NimbusJwtDecoder.withJwkSetUri(clerkJwksUri).build();
-        // Validate token signature and issuer only. Do not enforce an 'azp' origin check
-        // because Clerk's `azp` claim contains a client id, not an origin URL.
-        decoder.setJwtValidator(JwtValidators.createDefaultWithIssuer(clerkFrontendApiUrl));
+        OAuth2TokenValidator<Jwt> defaultValidator = JwtValidators.createDefault();
+        OAuth2TokenValidator<Jwt> issuerValidator = token -> {
+            String tokenIssuer = token.getIssuer() != null ? token.getIssuer().toString() : "";
+            String configuredIssuer = clerkFrontendApiUrl != null ? clerkFrontendApiUrl : "";
+
+            String normalizedTokenIssuer = tokenIssuer.endsWith("/")
+                    ? tokenIssuer.substring(0, tokenIssuer.length() - 1)
+                    : tokenIssuer;
+            String normalizedConfiguredIssuer = configuredIssuer.endsWith("/")
+                    ? configuredIssuer.substring(0, configuredIssuer.length() - 1)
+                    : configuredIssuer;
+
+            if (normalizedTokenIssuer.equals(normalizedConfiguredIssuer)) {
+                return OAuth2TokenValidatorResult.success();
+            }
+
+            return OAuth2TokenValidatorResult.failure(
+                    new OAuth2Error("invalid_token", "Invalid issuer", null));
+        };
+
+        decoder.setJwtValidator(new DelegatingOAuth2TokenValidator<>(defaultValidator, issuerValidator));
         return decoder;
     }
 
@@ -66,13 +89,11 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(ALLOWED_ORIGINS);
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Clerk-Email"));
+                configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
-
-        // azp-based origin validation removed to accept Clerk-issued tokens across environments
 }
