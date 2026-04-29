@@ -2,8 +2,11 @@ import { Link } from '@tanstack/react-router'
 import { SignIn, SignedIn, SignedOut, UserButton } from '@clerk/clerk-react'
 import { useEffect } from 'react'
 import { useAuthSession } from '../auth/AuthSession'
+import { getAppRootUrl } from '../auth/appUrls'
 import { getRoleHome } from '../auth/roleRoutes'
 import { router } from '../router/appRouter'
+
+const appRootUrl = getAppRootUrl()
 
 export function LoginPage() {
   const { backendUser, backendError, isClerkLoaded, isSignedIn, refreshBackendUser } = useAuthSession()
@@ -49,7 +52,11 @@ export function LoginPage() {
             </div>
 
             <div className="mt-6 overflow-hidden rounded-[1.5rem] border border-violet-100 bg-white p-3">
-              <SignIn />
+              <SignIn
+                routing="hash"
+                forceRedirectUrl={appRootUrl}
+                fallbackRedirectUrl={appRootUrl}
+              />
             </div>
 
             <Link
@@ -67,7 +74,7 @@ export function LoginPage() {
                 We are loading your role and routing you to the right workspace.
               </p>
               <div className="mt-4 flex justify-center">
-                <UserButton afterSignOutUrl="/" />
+                <UserButton afterSignOutUrl={appRootUrl} />
               </div>
             </div>
           </SignedIn>
