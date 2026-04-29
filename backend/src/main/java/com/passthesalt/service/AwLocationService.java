@@ -104,12 +104,11 @@ public class AwLocationService {
         validateCourseMembership(currentUser, courseId);
 
         List<AwLocation> locations = awLocationRepository.findByCourseIdOrderByCreatedAtDesc(courseId);
-        AwLocation winner = locations.stream()
+        return locations.stream()
                 .max(Comparator.comparingLong((AwLocation location) -> awVoteRepository.countByAwLocation_Id(location.getId()))
                         .thenComparing(AwLocation::getCreatedAt, Comparator.reverseOrder()))
-                .orElseThrow(() -> new ResourceNotFoundException("No afterwork locations found for course " + courseId));
-
-        return toDto(winner, currentUser);
+                .map(location -> toDto(location, currentUser))
+                .orElse(null);
     }
 
     private AwLocation getLocationForCurrentUser(Long locationId, User currentUser) {

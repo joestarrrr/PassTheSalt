@@ -102,6 +102,7 @@ public class AwLocationController {
             @AuthenticationPrincipal Jwt jwt,
             @RequestHeader(value = "X-Clerk-Email", required = false) String clerkEmail) {
         User currentUser = currentUserResolver.resolve(jwt, clerkEmail);
-        return ResponseEntity.ok(awLocationService.getWinningAwLocation(courseId, currentUser));
+        AwLocationDTO winner = awLocationService.getWinningAwLocation(courseId, currentUser);
+        return winner != null ? ResponseEntity.ok(winner) : ResponseEntity.noContent().build();
     }
 }
