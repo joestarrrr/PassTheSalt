@@ -4,7 +4,7 @@ import { useAuth, useUser } from '@clerk/clerk-react'
 import { router } from '../router/appRouter'
 import { getCurrentUser } from '../api.js'
 import { clearSessionToken, setSessionToken } from './sessionToken'
-import { getRoleHome } from './roleRoutes'
+import { getRoleHome, normalizeRole } from './roleRoutes'
 import type { BackendUser } from '../types/auth'
 
 type AuthSessionValue = {
@@ -19,6 +19,22 @@ type AuthSessionValue = {
 }
 
 const AuthSessionContext = createContext<AuthSessionValue | undefined>(undefined)
+
+function normalizeBackendUser(user: BackendUser | null): BackendUser | null {
+  if (!user) {
+    return null
+  }
+
+  const normalizedRole = normalizeRole(user.role)
+  if (!normalizedRole || normalizedRole === user.role) {
+    return user
+  }
+
+  return {
+    ...user,
+    role: normalizedRole,
+  }
+}
 
 export function AuthSessionProvider({ children }: { children: ReactNode }) {
   const { isLoaded, isSignedIn, getToken } = useAuth()
@@ -68,7 +84,7 @@ export function AuthSessionProvider({ children }: { children: ReactNode }) {
     retryDelay: 750,
   })
 
-  const backendUser = currentUserQuery.data ?? null
+  const backendUser = normalizeBackendUser(currentUserQuery.data ?? null)
   const backendError = currentUserQuery.error instanceof Error ? currentUserQuery.error.message : null
 
   useEffect(() => {
@@ -147,5 +163,6 @@ export function useCurrentRoleHome() {
     return '/login'
   }
 
-  return getRoleHome(backendUser.role)
+  const normalizedRole = normalizeRole(backendUser.role)
+  return normalizedRole ? getRoleHome(normalizedRole) : '/login'
 }

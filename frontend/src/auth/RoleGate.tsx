@@ -1,6 +1,6 @@
 import { type ReactNode, useEffect } from 'react'
 import { useAuthSession } from './AuthSession'
-import { getRoleHome } from './roleRoutes'
+import { getRoleHome, normalizeRole } from './roleRoutes'
 import { router } from '../router/appRouter'
 import type { AppRole } from '../types/auth'
 
@@ -22,6 +22,7 @@ function LoadingState({ message }: { message: string }) {
 
 export function RoleGate({ role, children }: RoleGateProps) {
   const { isClerkLoaded, isSignedIn, backendUser, backendError, isReady } = useAuthSession()
+  const normalizedBackendRole = normalizeRole(backendUser?.role)
 
   useEffect(() => {
     if (!isClerkLoaded || !isReady) {
@@ -35,13 +36,13 @@ export function RoleGate({ role, children }: RoleGateProps) {
       return
     }
 
-    if (backendUser?.role && backendUser.role !== role) {
-      const redirectTo = getRoleHome(backendUser.role)
+    if (normalizedBackendRole && normalizedBackendRole !== role) {
+      const redirectTo = getRoleHome(normalizedBackendRole)
       if (router.state.location.pathname !== redirectTo) {
         void router.navigate({ to: redirectTo })
       }
     }
-  }, [backendUser?.role, isClerkLoaded, isReady, isSignedIn, role])
+  }, [isClerkLoaded, isReady, isSignedIn, normalizedBackendRole, role])
 
   if (!isClerkLoaded || (!isReady && isSignedIn)) {
     return <LoadingState message="Checking your session..." />
@@ -55,8 +56,8 @@ export function RoleGate({ role, children }: RoleGateProps) {
     return <LoadingState message="Redirecting to login..." />
   }
 
-  if (backendUser?.role && backendUser.role !== role) {
-    return <LoadingState message={`Redirecting to your ${backendUser.role} workspace...`} />
+  if (normalizedBackendRole && normalizedBackendRole !== role) {
+    return <LoadingState message={`Redirecting to your ${normalizedBackendRole} workspace...`} />
   }
 
   return <>{children}</>

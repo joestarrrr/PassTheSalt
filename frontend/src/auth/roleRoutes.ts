@@ -1,7 +1,7 @@
 import type { AppRole } from '../types/auth'
 
 export function isAppRole(role: string): role is AppRole {
-  return role === 'admin' || role === 'user' || role === 'mob'
+  return normalizeRole(role) === role
 }
 
 export function getRoleHome(role: AppRole) {
@@ -13,4 +13,21 @@ export function getRoleHome(role: AppRole) {
     default:
       return '/user'
   }
+}
+
+export function normalizeRole(role: string | null | undefined): AppRole | null {
+  if (!role) {
+    return null
+  }
+
+  const normalized = role.trim().toLowerCase()
+  if (normalized === 'student') {
+    return 'user'
+  }
+
+  if (normalized === 'admin' || normalized === 'user' || normalized === 'mob') {
+    return normalized
+  }
+
+  return null
 }
