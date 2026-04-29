@@ -50,6 +50,7 @@ export function AdminMobGroupManagementPage() {
 
   const [selectedUserForMobGroup, setSelectedUserForMobGroup] = useState('')
   const [selectedMobGroupForUser, setSelectedMobGroupForUser] = useState('')
+  const [selectedCourseForMobGroup, setSelectedCourseForMobGroup] = useState('')
 
   const [feedback, setFeedback] = useState<Feedback>(null)
 
@@ -64,9 +65,9 @@ export function AdminMobGroupManagementPage() {
   })
 
   const mobGroupsQuery = useQuery<MobGroup[]>({
-    queryKey: ['course-mob-groups', selectedCourseForUser],
-    queryFn: () => getMobGroupsForCourse(selectedCourseForUser) as Promise<MobGroup[]>,
-    enabled: Boolean(selectedCourseForUser),
+    queryKey: ['course-mob-groups', selectedCourseForMobGroup],
+    queryFn: () => getMobGroupsForCourse(selectedCourseForMobGroup) as Promise<MobGroup[]>,
+    enabled: Boolean(selectedCourseForMobGroup),
   })
 
   const createMobGroupMutation = useMutation<unknown, Error, CreateMobGroupInput>({
@@ -112,11 +113,11 @@ export function AdminMobGroupManagementPage() {
   })
 
   const selectedCourseUsers = useMemo(() => {
-    if (!selectedCourseForUser) {
+    if (!selectedCourseForMobGroup) {
       return usersQuery.data ?? []
     }
-    return (usersQuery.data ?? []).filter((user) => String(user.courseId ?? '') === String(selectedCourseForUser))
-  }, [usersQuery.data, selectedCourseForUser])
+    return (usersQuery.data ?? []).filter((user) => String(user.courseId ?? '') === String(selectedCourseForMobGroup))
+  }, [usersQuery.data, selectedCourseForMobGroup])
 
   const handleCreateMobGroup = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -281,8 +282,8 @@ export function AdminMobGroupManagementPage() {
             <label className="block">
               <span className="mb-1 block text-sm font-medium text-slate-700">Course</span>
               <select
-                value={selectedCourseForUser}
-                onChange={(e) => setSelectedCourseForUser(e.target.value)}
+                value={selectedCourseForMobGroup}
+                onChange={(e) => setSelectedCourseForMobGroup(e.target.value)}
                 className="w-full rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm outline-none focus:border-violet-400"
               >
                 <option value="">Choose a course...</option>
