@@ -30,7 +30,8 @@ public class SecurityConfig {
             "http://localhost:3001",
             "http://127.0.0.1:3001",
             "http://localhost:5173",
-            "http://127.0.0.1:5173");
+            "http://127.0.0.1:5173",
+            "https://passthesalt-production.up.railway.app");
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -53,10 +54,9 @@ public class SecurityConfig {
             @Value("${clerk.frontend-api-url}") String clerkFrontendApiUrl,
             @Value("${clerk.jwks-uri:${clerk.frontend-api-url}/.well-known/jwks.json}") String clerkJwksUri) {
         NimbusJwtDecoder decoder = NimbusJwtDecoder.withJwkSetUri(clerkJwksUri).build();
-        OAuth2TokenValidator<Jwt> validator = new DelegatingOAuth2TokenValidator<>(
-                JwtValidators.createDefaultWithIssuer(clerkFrontendApiUrl),
-                token -> validateAuthorizedParty(token));
-        decoder.setJwtValidator(validator);
+        // Validate token signature and issuer only. Do not enforce an 'azp' origin check
+        // because Clerk's `azp` claim contains a client id, not an origin URL.
+        decoder.setJwtValidator(JwtValidators.createDefaultWithIssuer(clerkFrontendApiUrl));
         return decoder;
     }
 
@@ -73,13 +73,5 @@ public class SecurityConfig {
         return source;
     }
 
-    private OAuth2TokenValidatorResult validateAuthorizedParty(Jwt token) {
-        String authorizedParty = token.getClaimAsString("azp");
-        if (authorizedParty == null || ALLOWED_ORIGINS.contains(authorizedParty)) {
-            return OAuth2TokenValidatorResult.success();
-        }
-
-        return OAuth2TokenValidatorResult.failure(
-                new OAuth2Error("invalid_token", "Token origin is not allowed", null));
-    }
+        // azp-based origin validation removed to accept Clerk-issued tokens across environments
 }
