@@ -39,6 +39,7 @@ jobs:
           VITE_BASE_PATH: /PassTheSalt/
           VITE_BACKEND_URL: https://passthesalt-production.up.railway.app
           VITE_CLERK_PUBLISHABLE_KEY: ${{ secrets.VITE_CLERK_PUBLISHABLE_KEY }}
+          VITE_MAPBOX_TOKEN: ${{ secrets.VITE_MAPBOX_TOKEN }}
         run: npm run build
 
       - name: Upload artifact
