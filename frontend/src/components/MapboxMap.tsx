@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
-import mapboxgl from 'mapbox-gl'
+import mapboxgl from 'maplibre-gl'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import 'mapbox-gl/dist/mapbox-gl.css'
+import 'maplibre-gl/dist/maplibre-gl.css'
 import {
   deleteAwLocation,
   createAwLocation,
@@ -24,10 +24,7 @@ type Feedback = {
   message: string
 }
 
-const MAPBOX_TOKEN =
-  (import.meta.env.VITE_MAPBOX_TOKEN || import.meta.env.VITE_MAPBOX_PUBLIC_TOKEN || '').trim()
-
-const OSM_FALLBACK_STYLE = {
+const OSM_FALLBACK_STYLE: mapboxgl.StyleSpecification = {
   version: 8,
   sources: {
     osm: {
@@ -44,7 +41,7 @@ const OSM_FALLBACK_STYLE = {
       source: 'osm',
     },
   ],
-} as mapboxgl.Style
+}
 
 function getAuthToken() {
   return getSessionToken()
@@ -204,14 +201,10 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
 
     try {
       setMapError(null)
-
-      if (MAPBOX_TOKEN) {
-        mapboxgl.accessToken = MAPBOX_TOKEN
-      }
       const mapInstance = new mapboxgl.Map({
         container: mapContainer.current,
         // Use an OSM raster style by default so the map works without Mapbox token restrictions.
-        style: OSM_FALLBACK_STYLE as mapboxgl.Style,
+        style: OSM_FALLBACK_STYLE,
         center: [18.0686, 59.3293],
         zoom: 12,
       })
