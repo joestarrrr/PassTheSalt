@@ -155,49 +155,49 @@ export function AfterworkEventsManagement({ apiScope = 'admin', courseId = null 
     <SectionCard label="Afterwork Events" title="Afterwork Events Management">
       <div className="space-y-6">
         <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-        <form onSubmit={handleAddEvent} className="rounded-3xl border border-violet-100 bg-violet-50/70 p-5">
-          <h3 className="text-lg font-bold text-slate-900">Add New Event</h3>
+        <form onSubmit={handleAddEvent} className="rounded-3xl border border-violet-100 bg-violet-50/70 p-5 dark:border-violet-900/50 dark:bg-slate-800/70">
+          <h3 className="text-lg font-bold text-slate-900 dark:text-white">Add New Event</h3>
 
           <div className="mt-4 space-y-4">
             <label className="block">
-              <span className="mb-1 block text-sm font-medium text-slate-700">Event Name</span>
+              <span className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200">Event Name</span>
               <input
                 value={name}
                 onChange={(event) => setName(event.target.value)}
                 placeholder="Coffee & Code"
-                className="w-full rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm outline-none focus:border-violet-400 focus:ring-4 focus:ring-violet-200/60"
+                className="w-full rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm outline-none focus:border-violet-400 focus:ring-4 focus:ring-violet-200/60 dark:border-violet-900/50 dark:bg-slate-900 dark:text-slate-100 dark:placeholder-slate-400 dark:focus:border-violet-600 dark:focus:ring-violet-500/30"
               />
             </label>
 
             <label className="block">
-              <span className="mb-1 block text-sm font-medium text-slate-700">Date</span>
+              <span className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200">Date</span>
               <input
                 type="date"
                 value={date}
                 onChange={(event) => setDate(event.target.value)}
-                className="w-full rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm outline-none focus:border-violet-400 focus:ring-4 focus:ring-violet-200/60"
+                className="w-full rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm outline-none focus:border-violet-400 focus:ring-4 focus:ring-violet-200/60 dark:border-violet-900/50 dark:bg-slate-900 dark:text-slate-100 dark:focus:border-violet-600 dark:focus:ring-violet-500/30"
               />
             </label>
 
-            <button type="submit" className="w-full rounded-full bg-violet-600 px-5 py-3 text-sm font-semibold text-white hover:bg-violet-500">
+            <button type="submit" className="w-full rounded-full bg-violet-600 px-5 py-3 text-sm font-semibold text-white hover:bg-violet-500 dark:bg-violet-700 dark:hover:bg-violet-600">
               Create Event
             </button>
           </div>
         </form>
 
-        <div className="space-y-3 rounded-3xl border border-slate-100 bg-white/80 p-4 sm:p-5">
-          <h3 className="text-lg font-bold text-slate-900">Current Events</h3>
+        <div className="space-y-3 rounded-3xl border border-slate-100 bg-white/80 p-4 sm:p-5 dark:border-slate-700 dark:bg-slate-800/80">
+          <h3 className="text-lg font-bold text-slate-900 dark:text-white">Current Events</h3>
 
           {feedback && (
-            <div className={`rounded-2xl px-4 py-3 text-sm font-medium ${feedback.type === 'success' ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'}`}>
+            <div className={`rounded-2xl px-4 py-3 text-sm font-medium ${feedback.type === 'success' ? 'bg-emerald-50 text-emerald-700 dark:border dark:border-emerald-900/50 dark:bg-emerald-950/60 dark:text-emerald-200' : 'bg-rose-50 text-rose-700 dark:border dark:border-rose-900/50 dark:bg-rose-950/60 dark:text-rose-200'}`}>
               {feedback.message}
             </div>
           )}
 
-          {eventsQuery.isLoading ? <p className="text-sm text-slate-600">Loading events...</p> : null}
+          {eventsQuery.isLoading ? <p className="text-sm text-slate-600 dark:text-slate-400">Loading events...</p> : null}
 
           {events.map((eventItem) => (
-            <div key={eventItem.id} className="rounded-2xl border border-slate-100 bg-slate-50 p-4">
+            <div key={eventItem.id} className="rounded-2xl border border-slate-100 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-700/50">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div>
                   {editingEventId === eventItem.id ? (
@@ -205,22 +205,22 @@ export function AfterworkEventsManagement({ apiScope = 'admin', courseId = null 
                       <input
                         value={editName}
                         onChange={(event) => setEditName(event.target.value)}
-                        className="w-full rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm outline-none focus:border-violet-400"
+                        className="w-full rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm outline-none focus:border-violet-400 dark:border-violet-900/50 dark:bg-slate-900 dark:text-slate-100 dark:focus:border-violet-600"
                       />
                       <input
                         type="date"
                         value={editDate}
                         onChange={(event) => setEditDate(event.target.value)}
-                        className="w-full rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm outline-none focus:border-violet-400"
+                        className="w-full rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm outline-none focus:border-violet-400 dark:border-violet-900/50 dark:bg-slate-900 dark:text-slate-100 dark:focus:border-violet-600"
                       />
                     </div>
                   ) : (
                     <>
-                      <p className="font-semibold text-slate-900">{eventItem.name}</p>
-                      <p className="mt-1 text-sm text-slate-600">Date: {eventItem.date}</p>
+                      <p className="font-semibold text-slate-900 dark:text-white">{eventItem.name}</p>
+                      <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">Date: {eventItem.date}</p>
                     </>
                   )}
-                  <p className="text-sm text-slate-600">Status: {eventItem.status}</p>
+                  <p className="text-sm text-slate-600 dark:text-slate-300">Status: {eventItem.status}</p>
                 </div>
 
                 <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
@@ -229,14 +229,14 @@ export function AfterworkEventsManagement({ apiScope = 'admin', courseId = null 
                       <button
                         type="button"
                         onClick={() => handleUpdateEvent(eventItem.id)}
-                        className="w-full rounded-full bg-violet-600 px-4 py-2 text-sm font-semibold text-white hover:bg-violet-500 sm:w-auto"
+                        className="w-full rounded-full bg-violet-600 px-4 py-2 text-sm font-semibold text-white hover:bg-violet-500 sm:w-auto dark:bg-violet-700 dark:hover:bg-violet-600"
                       >
                         Save
                       </button>
                       <button
                         type="button"
                         onClick={cancelEditingEvent}
-                        className="w-full rounded-full bg-white px-4 py-2 text-sm font-semibold text-violet-700 ring-1 ring-inset ring-violet-200 hover:bg-violet-50 sm:w-auto"
+                        className="w-full rounded-full bg-white px-4 py-2 text-sm font-semibold text-violet-700 ring-1 ring-inset ring-violet-200 hover:bg-violet-50 sm:w-auto dark:border dark:border-violet-900/50 dark:bg-slate-700 dark:text-violet-400 dark:ring-0 dark:hover:bg-slate-600"
                       >
                         Cancel
                       </button>
@@ -245,7 +245,7 @@ export function AfterworkEventsManagement({ apiScope = 'admin', courseId = null 
                     <button
                       type="button"
                       onClick={() => startEditingEvent(eventItem)}
-                      className="w-full rounded-full bg-white px-4 py-2 text-sm font-semibold text-violet-700 ring-1 ring-inset ring-violet-200 hover:bg-violet-50 sm:w-auto"
+                      className="w-full rounded-full bg-white px-4 py-2 text-sm font-semibold text-violet-700 ring-1 ring-inset ring-violet-200 hover:bg-violet-50 sm:w-auto dark:border dark:border-violet-900/50 dark:bg-slate-700 dark:text-violet-400 dark:ring-0 dark:hover:bg-slate-600"
                     >
                       Edit
                     </button>
@@ -254,7 +254,7 @@ export function AfterworkEventsManagement({ apiScope = 'admin', courseId = null 
                   <button
                     type="button"
                     onClick={() => deleteMutation.mutate(eventItem.id)}
-                    className="w-full rounded-full bg-white px-4 py-2 text-sm font-semibold text-violet-700 ring-1 ring-inset ring-violet-200 hover:bg-violet-50 sm:w-auto"
+                    className="w-full rounded-full bg-white px-4 py-2 text-sm font-semibold text-violet-700 ring-1 ring-inset ring-violet-200 hover:bg-violet-50 sm:w-auto dark:border dark:border-violet-900/50 dark:bg-slate-700 dark:text-violet-400 dark:ring-0 dark:hover:bg-slate-600"
                   >
                     Delete
                   </button>
@@ -266,8 +266,8 @@ export function AfterworkEventsManagement({ apiScope = 'admin', courseId = null 
         </div>
 
         <div className="mt-6">
-          <h3 className="mb-4 text-lg font-bold text-slate-900">Event Locations & Voting</h3>
-          <div className="h-96 rounded-3xl border border-slate-100 overflow-hidden">
+          <h3 className="mb-4 text-lg font-bold text-slate-900 dark:text-white">Event Locations & Voting</h3>
+          <div className="h-96 rounded-3xl border border-slate-100 overflow-hidden dark:border-slate-700">
             <MapboxMap courseId={courseId} />
           </div>
         </div>

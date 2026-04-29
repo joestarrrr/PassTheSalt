@@ -39,21 +39,21 @@ function buildPopupContent(location: AwLocation) {
   title.textContent = location.name
 
   const meta = document.createElement('p')
-  meta.className = 'text-xs text-slate-500'
+  wrapper.className = 'space-y-3 rounded-2xl bg-white p-1 text-slate-800 dark:bg-slate-800 dark:text-slate-200'
   meta.textContent = `Votes: ${location.voteCount}`
-
+  title.className = 'text-sm font-semibold text-slate-900 dark:text-white'
   const creator = document.createElement('p')
   creator.className = 'text-xs text-slate-500'
   creator.textContent = `Suggested by ${location.createdByName}`
-
+  meta.className = 'text-xs text-slate-500 dark:text-slate-400'
   const voteButton = document.createElement('button')
   voteButton.type = 'button'
   voteButton.className = 'w-full rounded-full bg-violet-600 px-3 py-2 text-xs font-semibold text-white transition hover:bg-violet-500 disabled:bg-violet-300'
-  voteButton.textContent = location.votedByCurrentUser ? 'Already voted' : 'Vote'
+  creator.className = 'text-xs text-slate-500 dark:text-slate-400'
   voteButton.disabled = location.votedByCurrentUser
   voteButton.setAttribute('data-action', 'vote')
 
-  wrapper.append(title, meta, creator, voteButton)
+  voteButton.className = 'w-full rounded-full bg-violet-600 px-3 py-2 text-xs font-semibold text-white transition hover:bg-violet-500 disabled:bg-violet-300 dark:bg-violet-700 dark:hover:bg-violet-600'
 
   if (location.votedByCurrentUser) {
     const removeVoteButton = document.createElement('button')
@@ -63,7 +63,7 @@ function buildPopupContent(location: AwLocation) {
     removeVoteButton.setAttribute('data-action', 'remove-vote')
     wrapper.append(removeVoteButton)
   }
-
+    removeVoteButton.className = 'w-full rounded-full border border-violet-200 bg-white px-3 py-2 text-xs font-semibold text-violet-700 transition hover:bg-violet-50 dark:border-violet-900/50 dark:bg-slate-700 dark:text-violet-400 dark:hover:bg-slate-600'
   return wrapper
 }
 
@@ -241,7 +241,7 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
 
     for (const location of locationsQuery.data ?? []) {
       const markerElement = document.createElement('div')
-      markerElement.className = 'group flex h-9 w-9 items-center justify-center rounded-full border-2 border-white bg-violet-600 text-[10px] font-bold text-white shadow-lg shadow-violet-500/30 transition hover:scale-110'
+      markerElement.className = 'group flex h-9 w-9 items-center justify-center rounded-full border-2 border-white bg-violet-600 text-[10px] font-bold text-white shadow-lg shadow-violet-500/30 transition hover:scale-110 dark:bg-violet-700 dark:shadow-violet-700/30'
       markerElement.textContent = `${location.voteCount}`
 
       const marker = new mapboxgl.Marker(markerElement)
@@ -320,7 +320,7 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
 
   if (!courseId) {
     return (
-      <div className="flex h-full items-center justify-center rounded-3xl border border-dashed border-violet-200 bg-violet-50/60 px-6 text-center text-sm text-slate-600">
+      <div className="flex h-full items-center justify-center rounded-3xl border border-dashed border-violet-200 bg-violet-50/60 px-6 text-center text-sm text-slate-600 dark:border-violet-900/50 dark:bg-violet-950/40 dark:text-slate-400">
         Select a user assigned to a course to load afterwork locations.
       </div>
     )
@@ -331,7 +331,7 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
       <div ref={mapContainer} className="absolute inset-0" />
 
       {mapError && (
-        <div className="absolute inset-0 z-20 flex items-center justify-center bg-slate-950/90 px-6 text-center text-sm text-rose-200">
+        <div className="absolute inset-0 z-20 flex items-center justify-center bg-slate-950/90 px-6 text-center text-sm text-rose-200 dark:bg-slate-950/95">
           <div className="max-w-lg rounded-2xl border border-rose-400/30 bg-rose-950/40 p-4">
             <p className="font-semibold text-rose-100">Map unavailable</p>
             <p className="mt-2">{mapError}</p>
