@@ -196,6 +196,10 @@ export function AfterworkEventsManagement({ apiScope = 'admin', courseId = null 
 
           {eventsQuery.isLoading ? <p className="text-sm text-slate-600">Loading events...</p> : null}
 
+          {!eventsQuery.isLoading && events.length === 0 && (
+            <p className="text-sm text-slate-500">No events yet. Create one using the form on the left.</p>
+          )}
+
           {events.map((eventItem) => (
             <div key={eventItem.id} className="rounded-2xl border border-slate-100 bg-slate-50 p-4">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
