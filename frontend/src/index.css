@@ -6,8 +6,21 @@ body,
   min-height: 100%;
 }
 
+html {
+  color-scheme: light;
+  transition: background-color 200ms ease, color 200ms ease;
+}
+
 body {
   margin: 0;
   min-width: 320px;
+  background: #f8fafc;
+  color: #0f172a;
+  transition: background-color 200ms ease, color 200ms ease;
+}
+
+html.dark body {
+  background: #020617;
+  color: #e2e8f0;
 }
 

@@ -9,25 +9,26 @@ const DarkModeContext = createContext<DarkModeContextType | undefined>(undefined
 
 export function DarkModeProvider({ children }: { children: React.ReactNode }) {
   const [isDark, setIsDark] = useState<boolean>(() => {
-    // Check localStorage first
-    const stored = localStorage.getItem('passthesalt-dark-mode')
+    if (typeof window === 'undefined') {
+      return false
+    }
+
+    const stored = window.localStorage.getItem('passthesalt-dark-mode')
     if (stored !== null) {
       return stored === 'true'
     }
-    // Fall back to system preference
+
     return window.matchMedia('(prefers-color-scheme: dark)').matches
   })
 
   useEffect(() => {
-    // Update localStorage
-    localStorage.setItem('passthesalt-dark-mode', isDark.toString())
-    
-    // Update DOM
-    if (isDark) {
-      document.documentElement.classList.add('dark')
-    } else {
-      document.documentElement.classList.remove('dark')
+    if (typeof window === 'undefined') {
+      return
     }
+
+    window.localStorage.setItem('passthesalt-dark-mode', isDark.toString())
+    document.documentElement.classList.toggle('dark', isDark)
+    document.documentElement.style.colorScheme = isDark ? 'dark' : 'light'
   }, [isDark])
 
   const toggleDarkMode = () => {

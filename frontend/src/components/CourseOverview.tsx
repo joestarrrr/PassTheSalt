@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
+import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import { useAuthSession } from '../auth/AuthSession'
 import { getUserCourseContext } from '../api.js'
@@ -28,6 +29,12 @@ export function CourseOverview({ roleLabel }: CourseOverviewProps) {
     queryFn: () => getUserCourseContext(userId as number) as Promise<UserCourseContext>,
     enabled: Boolean(userId),
   })
+
+  const [daysPage, setDaysPage] = useState(0)
+  const PAGE_SIZE = 5
+  const days = userContextQuery.data?.courseDays ?? []
+  const totalPages = Math.max(1, Math.ceil(days.length / PAGE_SIZE))
+  const visibleDays = days.slice(daysPage * PAGE_SIZE, daysPage * PAGE_SIZE + PAGE_SIZE)
 
   return (
     <main className="rounded-[2rem] border border-white/70 bg-white/80 p-5 shadow-[0_20px_60px_rgba(109,40,217,0.10)] backdrop-blur-sm sm:p-8">
@@ -67,16 +74,49 @@ export function CourseOverview({ roleLabel }: CourseOverviewProps) {
 
           {userContextQuery.isLoading ? (
             <p className="text-sm text-slate-600">Loading course days...</p>
-          ) : (userContextQuery.data?.courseDays ?? []).length === 0 ? (
+          ) : days.length === 0 ? (
             <p className="text-sm text-slate-600">No course days available</p>
           ) : (
             <div className="space-y-2">
-              {(userContextQuery.data?.courseDays ?? []).map((day) => (
-                <div key={day.id} className="rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3 text-sm">
-                  <p className="font-semibold text-slate-900">Day {day.dayNumber}</p>
-                  <p className="text-slate-600">{day.date}</p>
+              {visibleDays.map((day) => (
+                <div
+                  key={day.id}
+                  className="rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3 text-sm transition-shadow hover:shadow-md dark:border-slate-700 dark:bg-slate-800/60"
+                >
+                  <p className="font-semibold text-slate-900 dark:text-white">Day {day.dayNumber}</p>
+                  <p className="text-slate-600 dark:text-slate-300">{day.date}</p>
                 </div>
               ))}
+
+              <div className="mt-3 flex items-center gap-2">
+                <button
+                  onClick={() => setDaysPage((p) => Math.max(0, p - 1))}
+                  disabled={daysPage === 0}
+                  className="rounded-full px-3 py-1 text-sm ring-1 ring-inset ring-slate-200 hover:bg-slate-100 disabled:opacity-50 dark:ring-slate-700 dark:hover:bg-slate-700"
+                >
+                  Previous
+                </button>
+
+                <div className="flex gap-1">
+                  {Array.from({ length: totalPages }).map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setDaysPage(i)}
+                      className={`w-8 rounded-full text-sm ${i === daysPage ? 'bg-violet-600 text-white' : 'bg-white ring-1 ring-inset ring-slate-200 dark:bg-slate-800 dark:ring-slate-700'}`}
+                    >
+                      {i + 1}
+                    </button>
+                  ))}
+                </div>
+
+                <button
+                  onClick={() => setDaysPage((p) => Math.min(totalPages - 1, p + 1))}
+                  disabled={daysPage >= totalPages - 1}
+                  className="rounded-full px-3 py-1 text-sm ring-1 ring-inset ring-slate-200 hover:bg-slate-100 disabled:opacity-50 dark:ring-slate-700 dark:hover:bg-slate-700"
+                >
+                  Next
+                </button>
+              </div>
             </div>
           )}
         </div>
