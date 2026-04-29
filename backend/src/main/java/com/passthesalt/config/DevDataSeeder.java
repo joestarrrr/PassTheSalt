@@ -18,7 +18,7 @@ import com.passthesalt.repository.MobGroupRepository;
 import com.passthesalt.repository.UserRepository;
 
 @Configuration
-@Profile("h2")
+@Profile("local")
 public class DevDataSeeder {
 
     @Bean
