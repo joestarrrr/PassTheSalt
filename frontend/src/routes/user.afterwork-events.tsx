@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { UserAfterworkEventsManagement } from '../pages/UserAfterworkEventsManagement'
+import { UserAfterworkPage } from '../pages/user/UserAfterworkPage'
 
-export const Route = createFileRoute('/user/afterwork-events')({
-  component: UserAfterworkEventsManagement,
+export const Route = createFileRoute('/user/afterwork')({
+  component: UserAfterworkPage,
 })

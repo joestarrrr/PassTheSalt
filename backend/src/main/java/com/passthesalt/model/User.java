@@ -13,6 +13,9 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @Column(unique = true)
+    private String clerkUserId;
+
     @Column(nullable = false)
     private String fullName;
 
@@ -33,7 +36,6 @@ public class User {
         createdAt = LocalDateTime.now();
     }
 
-    // Constructors
     public User() {
     }
 
@@ -43,7 +45,6 @@ public class User {
         this.role = role;
     }
 
-    // Getters and Setters
     public Long getId() {
         return id;
     }
@@ -58,6 +59,14 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getClerkUserId() {
+        return clerkUserId;
+    }
+
+    public void setClerkUserId(String clerkUserId) {
+        this.clerkUserId = clerkUserId;
     }
 
     public String getFullName() {

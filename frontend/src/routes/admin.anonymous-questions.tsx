@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { AnonymousQuestionsPage } from '../pages/AnonymousQuestionsPage'
+import { AdminFeedbackPage } from '../pages/admin/AdminFeedbackPage'
 
-export const Route = createFileRoute('/admin/anonymous-questions')({
-  component: AnonymousQuestionsPage,
+export const Route = createFileRoute('/admin/feedback')({
+  component: AdminFeedbackPage,
 })

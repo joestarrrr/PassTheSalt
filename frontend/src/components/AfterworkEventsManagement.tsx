@@ -12,24 +12,14 @@ import {
 } from '../api.js'
 import { SectionCard } from './SectionCard'
 import { MapboxMap } from './MapboxMap'
-
-type EventItem = {
-  id: number
-  name: string
-  date: string
-  rawDate: string
-  status: string
-}
-
-type AfterworkEventResponse = {
-  eventId: number
-  title: string
-  location: string
-  eventDate: string
-  createdByUserId: number
-}
+import type { AfterworkEventItem, AfterworkEventResponse } from '../types/afterwork'
 
 type ApiScope = 'admin' | 'user'
+
+type AfterworkEventsManagementProps = {
+  apiScope?: ApiScope
+  courseId?: number | null
+}
 
 function formatDateForUi(dateValue: string) {
   const date = new Date(`${dateValue}T00:00:00`)
@@ -38,7 +28,7 @@ function formatDateForUi(dateValue: string) {
     : date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 }
 
-function mapEventForUi(event: AfterworkEventResponse): EventItem {
+function mapEventForUi(event: AfterworkEventResponse): AfterworkEventItem {
   return {
     id: event.eventId,
     name: event.title,
@@ -48,7 +38,7 @@ function mapEventForUi(event: AfterworkEventResponse): EventItem {
   }
 }
 
-export function AfterworkEventsManagement({ apiScope = 'admin' }: { apiScope?: ApiScope }) {
+export function AfterworkEventsManagement({ apiScope = 'admin', courseId = null }: AfterworkEventsManagementProps) {
   const queryClient = useQueryClient()
   const [name, setName] = useState('')
   const [date, setDate] = useState('')
@@ -135,7 +125,7 @@ export function AfterworkEventsManagement({ apiScope = 'admin' }: { apiScope?: A
     createMutation.mutate({ title: name.trim(), eventDate: date.trim() })
   }
 
-  const startEditingEvent = (eventItem: EventItem) => {
+  const startEditingEvent = (eventItem: AfterworkEventItem) => {
     setEditingEventId(eventItem.id)
     setEditName(eventItem.name)
     setEditDate(eventItem.rawDate)
@@ -278,7 +268,7 @@ export function AfterworkEventsManagement({ apiScope = 'admin' }: { apiScope?: A
         <div className="mt-6">
           <h3 className="mb-4 text-lg font-bold text-slate-900">Event Locations & Voting</h3>
           <div className="h-96 rounded-3xl border border-slate-100 overflow-hidden">
-            <MapboxMap />
+            <MapboxMap courseId={courseId} />
           </div>
         </div>
       </div>

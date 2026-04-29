@@ -24,54 +24,37 @@ export function LandingPage() {
             <span className="absolute -bottom-2 left-1/2 h-3 w-28 -translate-x-1/2 rounded-full bg-violet-300/80 blur-[1px]" />
           </h1>
           <p className="mx-auto max-w-sm text-sm leading-6 text-slate-600 sm:text-base">
-            A soft little space to share notes, ask questions, and make class feel a lot friendlier.
+            Choose the mode you want to explore. Each role lands on its own dashboard and page set.
           </p>
         </div>
 
-        <div className="relative mb-8 w-full">
-          <div className="absolute -left-1 top-8 hidden h-14 w-14 rounded-full border border-violet-200/80 sm:block" />
-          <div className="absolute -right-2 top-2 hidden h-10 w-10 rounded-full border border-pink-200/80 sm:block" />
-
-          <div className="relative mx-auto flex w-full max-w-sm items-center justify-center gap-4 rounded-[2rem] border border-white/70 bg-white/75 p-5 shadow-[0_20px_60px_rgba(109,40,217,0.12)] backdrop-blur-sm">
-            <div className="relative shrink-0">
-              <img
-                src="https://placehold.co/180x180/f5e8ff/7c3aed?text=Salt+Buddy"
-                alt="Placeholder mascot illustration"
-                className="h-28 w-28 rounded-[1.5rem] border-4 border-white object-cover shadow-lg shadow-violet-200/50 sm:h-32 sm:w-32"
-              />
-              <span className="absolute -left-3 top-1 rounded-full bg-white px-2 py-1 text-[10px] font-semibold text-violet-500 shadow-sm">
-                hi!
-              </span>
-            </div>
-
-            <div className="max-w-[11rem] rounded-[1.5rem] rounded-bl-md border border-violet-100 bg-violet-50 px-4 py-3 text-left shadow-sm">
-              <p className="text-sm font-medium leading-6 text-slate-700">
-                Hey! Ready to make class notes a little less lonely?
-              </p>
-              <div className="mt-2 flex gap-1.5">
-                <span className="h-1.5 w-1.5 rounded-full bg-violet-300" />
-                <span className="h-1.5 w-1.5 rounded-full bg-violet-300" />
-                <span className="h-1.5 w-1.5 rounded-full bg-pink-300" />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="max-w-sm space-y-5">
-          <p className="text-base leading-7 text-slate-600 sm:text-[1.05rem]">
-            Sign in to share feedback, swap ideas, and join the class community in one cute little place.
-          </p>
+        <div className="grid w-full max-w-4xl gap-4 sm:grid-cols-3">
+          <Link
+            to="/login"
+            className="rounded-[2rem] border border-violet-100 bg-white/80 p-5 text-left shadow-[0_20px_60px_rgba(109,40,217,0.10)] transition hover:-translate-y-1 hover:border-violet-200"
+          >
+            <p className="text-xs font-semibold uppercase tracking-[0.35em] text-violet-500/90">Admin</p>
+            <p className="mt-3 text-xl font-bold text-slate-900">Sign in as Admin</p>
+            <p className="mt-2 text-sm leading-6 text-slate-600">Clerk login routes admins to admin-only pages.</p>
+          </Link>
 
           <Link
             to="/login"
-            className="inline-flex w-full items-center justify-center rounded-full bg-violet-600 px-6 py-4 text-base font-semibold text-white shadow-lg shadow-violet-300/50 transition duration-200 hover:-translate-y-0.5 hover:bg-violet-500 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-violet-300/60"
+            className="rounded-[2rem] border border-violet-100 bg-white/80 p-5 text-left shadow-[0_20px_60px_rgba(109,40,217,0.10)] transition hover:-translate-y-1 hover:border-violet-200"
           >
-            Log in to continue
+            <p className="text-xs font-semibold uppercase tracking-[0.35em] text-violet-500/90">User</p>
+            <p className="mt-3 text-xl font-bold text-slate-900">Sign in as User</p>
+            <p className="mt-2 text-sm leading-6 text-slate-600">Clerk login routes users to the user workspace.</p>
           </Link>
 
-          <p className="font-[cursive] text-sm text-violet-500/90">
-            Promise it only takes a sec <span className="inline-block rotate-[-8deg]">✿</span>
-          </p>
+          <Link
+            to="/login"
+            className="rounded-[2rem] border border-violet-100 bg-white/80 p-5 text-left shadow-[0_20px_60px_rgba(109,40,217,0.10)] transition hover:-translate-y-1 hover:border-violet-200"
+          >
+            <p className="text-xs font-semibold uppercase tracking-[0.35em] text-violet-500/90">Mob</p>
+            <p className="mt-3 text-xl font-bold text-slate-900">Sign in as Mob</p>
+            <p className="mt-2 text-sm leading-6 text-slate-600">Clerk login routes mob users to mob pages.</p>
+          </Link>
         </div>
       </section>
     </main>

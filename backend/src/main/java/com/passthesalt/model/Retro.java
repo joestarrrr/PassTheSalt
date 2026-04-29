@@ -72,7 +72,6 @@ public class Retro {
         this.lectureName = lectureName;
     }
 
-    // Getters and Setters
     public Long getId() {
         return id;
     }

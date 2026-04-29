@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 import com.passthesalt.model.Course;
 import com.passthesalt.model.CourseDay;
@@ -17,6 +18,7 @@ import com.passthesalt.repository.MobGroupRepository;
 import com.passthesalt.repository.UserRepository;
 
 @Configuration
+@Profile("h2")
 public class DevDataSeeder {
 
     @Bean
@@ -43,19 +45,19 @@ public class DevDataSeeder {
             MobGroup alpha = mobGroupRepository.save(new MobGroup(course.getId(), "Mob Alpha", "Frontend focus"));
             MobGroup beta = mobGroupRepository.save(new MobGroup(course.getId(), "Mob Beta", "Backend focus"));
 
-            User admin = new User("admin@passthesalt.dev", "Admin User", "admin");
-            admin.setCourseId(course.getId());
-            admin.setMobGroupId(alpha.getId());
+            User realAdmin = new User("alekmillionaire@salt.dev", "Alek Admin", "admin");
+            realAdmin.setCourseId(course.getId());
+            realAdmin.setMobGroupId(alpha.getId());
 
-            User studentA = new User("sara@passthesalt.dev", "Sara Student", "user");
-            studentA.setCourseId(course.getId());
-            studentA.setMobGroupId(alpha.getId());
+            User user = new User("venujan.nagendirakumer@salt.dev", "Venujan User", "user");
+            user.setCourseId(course.getId());
+            user.setMobGroupId(alpha.getId());
 
-            User studentB = new User("alex@passthesalt.dev", "Alex Student", "user");
-            studentB.setCourseId(course.getId());
-            studentB.setMobGroupId(beta.getId());
+            User mobMember = new User("notajm@salt.dev", "Mob Member", "mob");
+            mobMember.setCourseId(course.getId());
+            mobMember.setMobGroupId(beta.getId());
 
-            userRepository.saveAll(List.of(admin, studentA, studentB));
+            userRepository.saveAll(List.of(realAdmin, user, mobMember));
         };
     }
 }

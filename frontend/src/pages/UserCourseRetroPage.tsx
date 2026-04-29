@@ -1,13 +1,8 @@
 import { useState, type FormEvent } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { getUserCourseContext, submitRetro } from '../api'
-
-type CourseDay = {
-  id: number
-  courseId: number
-  dayNumber: number
-  date: string
-}
+import type { CourseDay, UserCourseContext } from '../types/course'
+import { useAuthSession } from '../auth/AuthSession'
 
 type Feedback = { type: 'success' | 'error'; message: string } | null
 
@@ -25,17 +20,9 @@ type RetroInput = {
   lectureName: string | null
 }
 
-type UserCourseContext = {
-  userId: number
-  courseId: number
-  courseName: string
-  mobGroupId: number | null
-  mobGroupName: string | null
-  courseDays: CourseDay[]
-}
-
 export function UserCourseRetroPage() {
   const queryClient = useQueryClient()
+  const { backendUser } = useAuthSession()
   const [selectedDayId, setSelectedDayId] = useState<number | null>(null)
   const [selectedDay, setSelectedDay] = useState<CourseDay | null>(null)
   const [startOfDay, setStartOfDay] = useState('')
@@ -45,11 +32,11 @@ export function UserCourseRetroPage() {
   const [rating, setRating] = useState<number>(3)
   const [lectureName, setLectureName] = useState('')
   const [feedback, setFeedback] = useState<Feedback>(null)
-  const [userId, setUserId] = useState<number>(1)
+  const userId = backendUser?.id ?? null
 
   const userContextQuery = useQuery<UserCourseContext>({
     queryKey: ['user-course-context', userId],
-    queryFn: () => getUserCourseContext(userId) as Promise<UserCourseContext>,
+    queryFn: () => getUserCourseContext(userId as number) as Promise<UserCourseContext>,
     enabled: Boolean(userId),
   })
 
@@ -84,7 +71,7 @@ export function UserCourseRetroPage() {
       courseId: userContextQuery.data.courseId,
       courseDayId: selectedDayId,
       mobGroupId: userContextQuery.data.mobGroupId,
-      userId,
+      userId: userId as number,
       startOfDay,
       workedWell: workedWell || null,
       learned: learned || null,
@@ -108,16 +95,8 @@ export function UserCourseRetroPage() {
           </p>
 
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
-            <label className="block">
-              <span className="mb-1 block text-sm font-medium text-slate-700">User ID</span>
-              <input
-                type="number"
-                value={userId}
-                onChange={(e) => setUserId(Number(e.target.value))}
-                className="w-full rounded-2xl border border-violet-200 bg-white px-4 py-2 text-sm outline-none focus:border-violet-400"
-              />
-            </label>
             <div className="rounded-2xl border border-violet-100 bg-violet-50/70 px-4 py-2 text-sm text-slate-700">
+              <p>Signed in as: {backendUser?.fullName ?? 'Loading...'}</p>
               <p>Course: {userContextQuery.data?.courseName ?? 'Not assigned'}</p>
               <p>Mob Group: {userContextQuery.data?.mobGroupName ?? 'Not assigned'}</p>
             </div>

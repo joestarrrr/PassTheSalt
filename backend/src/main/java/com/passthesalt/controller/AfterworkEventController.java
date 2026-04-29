@@ -32,20 +32,17 @@ public class AfterworkEventController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('admin','user')")
     public ResponseEntity<List<AfterworkEventDTO>> getAfterworkEvents() {
         return ResponseEntity.ok(adminService.getAfterworkEvents());
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('admin','user')")
     public ResponseEntity<AfterworkEventDTO> createAfterworkEvent(@Valid @RequestBody AfterworkEventDTO request) {
         AfterworkEventDTO result = adminService.createAfterworkEvent(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
     @PutMapping("/{eventId}")
-    @PreAuthorize("hasAnyRole('admin','user')")
     public ResponseEntity<AfterworkEventDTO> updateAfterworkEvent(@PathVariable Long eventId,
             @Valid @RequestBody AfterworkEventDTO request) {
         AfterworkEventDTO result = adminService.updateAfterworkEvent(eventId, request);
@@ -54,7 +51,6 @@ public class AfterworkEventController {
 
     @DeleteMapping("/{eventId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasAnyRole('admin','user')")
     public void deleteAfterworkEvent(@PathVariable Long eventId) {
         adminService.deleteAfterworkEvent(eventId);
     }

@@ -102,3 +102,15 @@ The frontend is configured with a proxy in `vite.config.ts` that allows it to co
 - The backend uses Spring Boot with Spring Web dependency
 - The frontend uses React 18, TypeScript, and Vite for fast development
 
+## Clerk configuration (development)
+
+The backend needs a Clerk secret key to resolve user profiles when the JWT does not include an email. Set the environment variable `CLERK_SECRET_KEY` before starting the backend. Example (PowerShell):
+
+```powershell
+$env:CLERK_SECRET_KEY = 'sk_your_clerk_secret_here'
+cd backend
+mvn -Dspring-boot.run.profiles=legacy-open-security -e spring-boot:run
+```
+
+If you prefer not to set a secret key in development, ensure Clerk is configured to emit the user's email in the JWT session tokens the frontend sends to the backend.
+

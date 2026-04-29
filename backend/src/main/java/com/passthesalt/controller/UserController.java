@@ -1,7 +1,6 @@
 package com.passthesalt.controller;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,7 +21,6 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/course-context")
-    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<UserCourseContextDTO> getUserCourseContext(@PathVariable Long userId) {
         return ResponseEntity.ok(userAssignmentService.getUserCourseContext(userId));
     }

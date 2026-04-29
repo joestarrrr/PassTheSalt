@@ -14,7 +14,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
-@Profile("secure")
+@Profile("legacy-open-security")
 public class SecureSecurityConfig {
 
     @Bean
