@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { AdminLayout } from '../../layout/AdminLayout'
 import { AfterworkEventsManagement } from '../../components/AfterworkEventsManagement'
@@ -16,6 +16,17 @@ export function AdminAfterworkPage() {
     queryKey: ['courses'],
     queryFn: () => getCourses() as Promise<Course[]>,
   })
+
+  useEffect(() => {
+    if (courseId !== null) {
+      return
+    }
+
+    const firstCourseId = coursesQuery.data?.[0]?.id ?? null
+    if (firstCourseId !== null) {
+      setCourseId(firstCourseId)
+    }
+  }, [courseId, coursesQuery.data])
 
   return (
     <AdminLayout

@@ -27,6 +27,25 @@ type Feedback = {
 const MAPBOX_TOKEN =
   (import.meta.env.VITE_MAPBOX_TOKEN || import.meta.env.VITE_MAPBOX_PUBLIC_TOKEN || '').trim()
 
+const OSM_FALLBACK_STYLE = {
+  version: 8,
+  sources: {
+    osm: {
+      type: 'raster',
+      tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
+      tileSize: 256,
+      attribution: '(c) OpenStreetMap contributors',
+    },
+  },
+  layers: [
+    {
+      id: 'osm',
+      type: 'raster',
+      source: 'osm',
+    },
+  ],
+} as mapboxgl.Style
+
 function getAuthToken() {
   return getSessionToken()
 }
@@ -179,21 +198,21 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
       return
     }
 
-    if (!MAPBOX_TOKEN) {
-      setMapError('Map is not configured. Set VITE_MAPBOX_TOKEN in frontend/.env and restart Vite.')
-      return
-    }
-
     if (!mapContainer.current) {
       return
     }
 
     try {
       setMapError(null)
-      mapboxgl.accessToken = MAPBOX_TOKEN
+
+      if (MAPBOX_TOKEN) {
+        mapboxgl.accessToken = MAPBOX_TOKEN
+      }
+
+      let switchedToFallback = false
       const mapInstance = new mapboxgl.Map({
         container: mapContainer.current,
-        style: 'mapbox://styles/mapbox/streets-v12',
+        style: MAPBOX_TOKEN ? 'mapbox://styles/mapbox/streets-v12' : (OSM_FALLBACK_STYLE as mapboxgl.Style),
         center: [18.0686, 59.3293],
         zoom: 12,
       })
@@ -208,14 +227,31 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
 
       mapInstance.on('error', (event) => {
         const message = event.error?.message ?? 'Map rendering failed. Check token and network access.'
+        const isMapboxAuthError = /401|403|forbidden|unauthorized|access token|not authorized/i.test(message)
+
+        if (!switchedToFallback && MAPBOX_TOKEN && isMapboxAuthError) {
+          switchedToFallback = true
+          mapInstance.setStyle(OSM_FALLBACK_STYLE as mapboxgl.Style)
+          setMapError('Mapbox tiles were blocked for this environment. Using OpenStreetMap fallback.')
+          return
+        }
+
         setMapError(message)
       })
+
+      mapInstance.on('load', () => {
+        mapInstance.resize()
+      })
+
+      const handleResize = () => mapInstance.resize()
+      window.addEventListener('resize', handleResize)
 
       map.current = mapInstance
       setMapReady(true)
 
       return () => {
         popupRef.current?.remove()
+        window.removeEventListener('resize', handleResize)
         mapInstance.remove()
         map.current = null
         setMapReady(false)
@@ -324,7 +360,7 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
   if (!courseId) {
     return (
       <div className="flex h-full items-center justify-center rounded-3xl border border-dashed border-violet-200 bg-violet-50/60 px-6 text-center text-sm text-slate-600">
-        Select a user assigned to a course to load afterwork locations.
+        Select a course to load the map and afterwork locations.
       </div>
     )
   }
