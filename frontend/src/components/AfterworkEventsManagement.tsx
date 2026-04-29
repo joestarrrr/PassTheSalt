@@ -155,53 +155,53 @@ export function AfterworkEventsManagement({ apiScope = 'admin', courseId = null 
     <SectionCard label="Afterwork Events" title="Afterwork Events Management">
       <div className="space-y-6">
         <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-        <form onSubmit={handleAddEvent} className="rounded-3xl border border-violet-100 bg-violet-50/70 p-5">
-          <h3 className="text-lg font-bold text-slate-900">Add New Event</h3>
+        <form onSubmit={handleAddEvent} className="rounded-3xl border border-violet-500/20 bg-violet-500/8 p-5">
+          <h3 className="text-lg font-bold text-white">Add New Event</h3>
 
           <div className="mt-4 space-y-4">
             <label className="block">
-              <span className="mb-1 block text-sm font-medium text-slate-700">Event Name</span>
+              <span className="mb-1 block text-sm font-medium text-white/60">Event Name</span>
               <input
                 value={name}
                 onChange={(event) => setName(event.target.value)}
                 placeholder="Coffee & Code"
-                className="w-full rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm outline-none focus:border-violet-400 focus:ring-4 focus:ring-violet-200/60"
+                className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-white/25 outline-none focus:border-violet-500"
               />
             </label>
 
             <label className="block">
-              <span className="mb-1 block text-sm font-medium text-slate-700">Date</span>
+              <span className="mb-1 block text-sm font-medium text-white/60">Date</span>
               <input
                 type="date"
                 value={date}
                 onChange={(event) => setDate(event.target.value)}
-                className="w-full rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm outline-none focus:border-violet-400 focus:ring-4 focus:ring-violet-200/60"
+                className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none focus:border-violet-500 [color-scheme:dark]"
               />
             </label>
 
-            <button type="submit" className="w-full rounded-full bg-violet-600 px-5 py-3 text-sm font-semibold text-white hover:bg-violet-500">
+            <button type="submit" className="w-full rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 px-5 py-3 text-sm font-semibold text-white hover:from-violet-500 hover:to-fuchsia-500">
               Create Event
             </button>
           </div>
         </form>
 
-        <div className="space-y-3 rounded-3xl border border-slate-100 bg-white/80 p-4 sm:p-5">
-          <h3 className="text-lg font-bold text-slate-900">Current Events</h3>
+        <div className="space-y-3 rounded-3xl border border-white/10 bg-white/5 p-4 sm:p-5">
+          <h3 className="text-lg font-bold text-white">Current Events</h3>
 
           {feedback && (
-            <div className={`rounded-2xl px-4 py-3 text-sm font-medium ${feedback.type === 'success' ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'}`}>
+            <div className={`rounded-2xl px-4 py-3 text-sm font-medium ${feedback.type === 'success' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'}`}>
               {feedback.message}
             </div>
           )}
 
-          {eventsQuery.isLoading ? <p className="text-sm text-slate-600">Loading events...</p> : null}
+          {eventsQuery.isLoading ? <p className="text-sm text-white/40">Loading events...</p> : null}
 
           {!eventsQuery.isLoading && events.length === 0 && (
-            <p className="text-sm text-slate-500">No events yet. Create one using the form on the left.</p>
+            <p className="text-sm text-white/40">No events yet. Create one using the form on the left.</p>
           )}
 
           {events.map((eventItem) => (
-            <div key={eventItem.id} className="rounded-2xl border border-slate-100 bg-slate-50 p-4">
+            <div key={eventItem.id} className="rounded-2xl border border-white/8 bg-white/5 p-4">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div>
                   {editingEventId === eventItem.id ? (
@@ -209,22 +209,22 @@ export function AfterworkEventsManagement({ apiScope = 'admin', courseId = null 
                       <input
                         value={editName}
                         onChange={(event) => setEditName(event.target.value)}
-                        className="w-full rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm outline-none focus:border-violet-400"
+                        className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none focus:border-violet-500"
                       />
                       <input
                         type="date"
                         value={editDate}
                         onChange={(event) => setEditDate(event.target.value)}
-                        className="w-full rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm outline-none focus:border-violet-400"
+                        className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none focus:border-violet-500 [color-scheme:dark]"
                       />
                     </div>
                   ) : (
                     <>
-                      <p className="font-semibold text-slate-900">{eventItem.name}</p>
-                      <p className="mt-1 text-sm text-slate-600">Date: {eventItem.date}</p>
+                      <p className="font-semibold text-white">{eventItem.name}</p>
+                      <p className="mt-1 text-sm text-white/50">Date: {eventItem.date}</p>
                     </>
                   )}
-                  <p className="text-sm text-slate-600">Status: {eventItem.status}</p>
+                  <p className="text-sm text-white/50">Status: {eventItem.status}</p>
                 </div>
 
                 <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
@@ -233,14 +233,14 @@ export function AfterworkEventsManagement({ apiScope = 'admin', courseId = null 
                       <button
                         type="button"
                         onClick={() => handleUpdateEvent(eventItem.id)}
-                        className="w-full rounded-full bg-violet-600 px-4 py-2 text-sm font-semibold text-white hover:bg-violet-500 sm:w-auto"
+                        className="w-full rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 px-4 py-2 text-sm font-semibold text-white hover:from-violet-500 hover:to-fuchsia-500 sm:w-auto"
                       >
                         Save
                       </button>
                       <button
                         type="button"
                         onClick={cancelEditingEvent}
-                        className="w-full rounded-full bg-white px-4 py-2 text-sm font-semibold text-violet-700 ring-1 ring-inset ring-violet-200 hover:bg-violet-50 sm:w-auto"
+                        className="w-full rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white/70 hover:bg-white/10 sm:w-auto"
                       >
                         Cancel
                       </button>
@@ -249,7 +249,7 @@ export function AfterworkEventsManagement({ apiScope = 'admin', courseId = null 
                     <button
                       type="button"
                       onClick={() => startEditingEvent(eventItem)}
-                      className="w-full rounded-full bg-white px-4 py-2 text-sm font-semibold text-violet-700 ring-1 ring-inset ring-violet-200 hover:bg-violet-50 sm:w-auto"
+                      className="w-full rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white/70 hover:bg-white/10 sm:w-auto"
                     >
                       Edit
                     </button>
@@ -258,7 +258,7 @@ export function AfterworkEventsManagement({ apiScope = 'admin', courseId = null 
                   <button
                     type="button"
                     onClick={() => deleteMutation.mutate(eventItem.id)}
-                    className="w-full rounded-full bg-white px-4 py-2 text-sm font-semibold text-violet-700 ring-1 ring-inset ring-violet-200 hover:bg-violet-50 sm:w-auto"
+                    className="w-full rounded-full border border-rose-500/20 bg-rose-500/8 px-4 py-2 text-sm font-semibold text-rose-400 hover:bg-rose-500/15 sm:w-auto"
                   >
                     Delete
                   </button>
@@ -270,8 +270,8 @@ export function AfterworkEventsManagement({ apiScope = 'admin', courseId = null 
         </div>
 
         <div className="mt-6">
-          <h3 className="mb-4 text-lg font-bold text-slate-900">Event Locations & Voting</h3>
-          <div className="h-[55vh] min-h-[22rem] max-h-[44rem] rounded-3xl border border-slate-100 overflow-hidden">
+          <h3 className="mb-4 text-lg font-bold text-white">Event Locations & Voting</h3>
+          <div className="h-[55vh] min-h-[22rem] max-h-[44rem] rounded-3xl border border-white/10 overflow-hidden">
             <MapboxMap courseId={courseId} />
           </div>
         </div>

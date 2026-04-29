@@ -46,49 +46,49 @@ export function MobDashboardPage() {
             <Link
               key={card.to}
               to={card.to}
-              className="rounded-[2rem] border border-violet-100 bg-white/80 p-5 shadow-[0_20px_60px_rgba(109,40,217,0.10)] transition hover:-translate-y-1 hover:border-violet-200"
+              className="rounded-[2rem] border border-white/10 bg-white/5 p-5 transition hover:-translate-y-1 hover:border-violet-500/30 hover:bg-white/8"
             >
-              <p className="text-xs font-semibold uppercase tracking-[0.35em] text-violet-500/90">Mob</p>
-              <p className="mt-3 text-xl font-bold text-slate-900">{card.title}</p>
-              <p className="mt-2 text-sm leading-6 text-slate-600">{card.description}</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.35em] text-violet-400">Mob</p>
+              <p className="mt-3 text-xl font-bold text-white">{card.title}</p>
+              <p className="mt-2 text-sm leading-6 text-white/50">{card.description}</p>
             </Link>
           ))}
         </div>
 
         {/* Recent Retros */}
-        <div className="rounded-[2rem] border border-violet-100 bg-white/80 p-5 shadow-[0_20px_60px_rgba(109,40,217,0.10)] sm:p-8">
+        <div className="rounded-[2rem] border border-white/10 bg-white/5 p-5 sm:p-8">
           <div className="mb-4 flex items-center justify-between">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.35em] text-violet-500/90">Activity</p>
-              <h2 className="mt-1 text-xl font-bold text-slate-900">Recent Retros</h2>
+              <p className="text-xs font-semibold uppercase tracking-[0.35em] text-violet-400">Activity</p>
+              <h2 className="mt-1 text-xl font-bold text-white">Recent Retros</h2>
             </div>
-            <Link to="/mob/retros" className="rounded-full bg-violet-600 px-4 py-2 text-xs font-semibold text-white hover:bg-violet-500">
+            <Link to="/mob/retros" className="rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 px-4 py-2 text-xs font-semibold text-white hover:from-violet-500 hover:to-fuchsia-500">
               + New Retro
             </Link>
           </div>
 
-          {retrosQuery.isLoading && <p className="text-sm text-slate-500">Loading retros...</p>}
+          {retrosQuery.isLoading && <p className="text-sm text-white/40">Loading retros...</p>}
 
           {!retrosQuery.isLoading && myRetros.length === 0 && (
-            <p className="text-sm text-slate-500">No retros submitted yet. Go submit your first one!</p>
+            <p className="text-sm text-white/40">No retros submitted yet. Go submit your first one!</p>
           )}
 
           {myRetros.length > 0 && (
             <div className="space-y-3">
               {myRetros.map((retro) => (
-                <div key={retro.id} className="rounded-2xl border border-slate-100 bg-slate-50 p-4">
+                <div key={retro.id} className="rounded-2xl border border-white/8 bg-white/5 p-4">
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
-                      <p className="font-semibold text-slate-900 truncate">
+                      <p className="font-semibold text-white truncate">
                         {retro.lectureName ?? 'Retro'}
                       </p>
-                      <p className="mt-0.5 text-xs text-slate-500">{retro.submissionDate}</p>
+                      <p className="mt-0.5 text-xs text-white/40">{retro.submissionDate}</p>
                       {retro.startOfDay && (
-                        <p className="mt-2 text-sm text-slate-700 line-clamp-2">{retro.startOfDay}</p>
+                        <p className="mt-2 text-sm text-white/55 line-clamp-2">{retro.startOfDay}</p>
                       )}
                     </div>
                     <div className="flex-shrink-0 text-right">
-                      <span className="inline-flex items-center gap-1 rounded-full bg-violet-100 px-3 py-1 text-xs font-semibold text-violet-700">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-violet-500/15 px-3 py-1 text-xs font-semibold text-violet-300">
                         {'★'.repeat(retro.rating)}{'☆'.repeat(5 - retro.rating)} {STAR_LABELS[retro.rating]}
                       </span>
                     </div>

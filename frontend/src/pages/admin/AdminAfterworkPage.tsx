@@ -33,7 +33,7 @@ export function AdminAfterworkPage() {
       title="Afterwork"
       description="Review afterwork events and inspect location votes by course."
     >
-      <div className="rounded-[2rem] border border-white/70 bg-white/80 p-5 shadow-[0_20px_60px_rgba(109,40,217,0.10)] backdrop-blur-sm sm:p-8">
+      <div className="rounded-[2rem] border border-white/10 bg-white/5 p-5 backdrop-blur-sm sm:p-8">
         <AfterworkEventsManagement apiScope="admin" courseId={courseId} />
       </div>
     </AdminLayout>

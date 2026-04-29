@@ -65,61 +65,61 @@ export function AdminCourseManagementPage() {
 
   return (
     <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-      <form onSubmit={handleCreateCourse} className="rounded-3xl border border-violet-100 bg-violet-50/70 p-5">
-            <h3 className="text-lg font-bold text-slate-900">Create New Course</h3>
+      <form onSubmit={handleCreateCourse} className="rounded-3xl border border-violet-500/20 bg-violet-500/8 p-5">
+            <h3 className="text-lg font-bold text-white">Create New Course</h3>
 
             <div className="mt-4 space-y-4">
               <label className="block">
-                <span className="mb-1 block text-sm font-medium text-slate-700">Course Name</span>
+                <span className="mb-1 block text-sm font-medium text-white/60">Course Name</span>
                 <input
                   value={courseName}
                   onChange={(e) => setCourseName(e.target.value)}
                   placeholder="e.g. JavaScript Bootcamp"
-                  className="w-full rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm outline-none focus:border-violet-400 focus:ring-4 focus:ring-violet-200/60"
+                  className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-white/25 outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/30"
                 />
               </label>
 
               <label className="block">
-                <span className="mb-1 block text-sm font-medium text-slate-700">Number of Days</span>
+                <span className="mb-1 block text-sm font-medium text-white/60">Number of Days</span>
                 <input
                   type="number"
                   min="1"
                   max="365"
                   value={numberOfDays}
                   onChange={(e) => setNumberOfDays(Number(e.target.value))}
-                  className="w-full rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm outline-none focus:border-violet-400 focus:ring-4 focus:ring-violet-200/60"
+                  className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/30"
                 />
               </label>
 
               <label className="block">
-                <span className="mb-1 block text-sm font-medium text-slate-700">Start Date</span>
+                <span className="mb-1 block text-sm font-medium text-white/60">Start Date</span>
                 <input
                   type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
-                  className="w-full rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm outline-none focus:border-violet-400 focus:ring-4 focus:ring-violet-200/60"
+                  className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/30 [color-scheme:dark]"
                 />
               </label>
 
               <button
                 type="submit"
                 disabled={createMutation.isPending}
-                className="w-full rounded-full bg-violet-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-violet-500 disabled:bg-violet-300"
+                className="w-full rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 px-5 py-3 text-sm font-semibold text-white transition hover:from-violet-500 hover:to-fuchsia-500 disabled:opacity-50"
               >
                 {createMutation.isPending ? 'Creating...' : 'Create Course'}
               </button>
             </div>
           </form>
 
-          <div className="space-y-3 rounded-3xl border border-slate-100 bg-white/80 p-4 sm:p-5">
-            <h3 className="text-lg font-bold text-slate-900">Active Courses</h3>
+          <div className="space-y-3 rounded-3xl border border-white/10 bg-white/5 p-4 sm:p-5">
+            <h3 className="text-lg font-bold text-white">Active Courses</h3>
 
             {feedback && (
               <div
                 className={`rounded-2xl px-4 py-3 text-sm font-medium ${
                   feedback.type === 'success'
-                    ? 'bg-emerald-50 text-emerald-700'
-                    : 'bg-rose-50 text-rose-700'
+                    ? 'bg-emerald-500/10 text-emerald-400'
+                    : 'bg-rose-500/10 text-rose-400'
                 }`}
               >
                 {feedback.message}
@@ -127,15 +127,15 @@ export function AdminCourseManagementPage() {
             )}
 
             {coursesQuery.isLoading ? (
-              <p className="text-sm text-slate-600">Loading courses...</p>
+              <p className="text-sm text-white/40">Loading courses...</p>
             ) : (coursesQuery.data ?? []).length === 0 ? (
-              <p className="text-sm text-slate-600">No courses yet. Create one to get started!</p>
+              <p className="text-sm text-white/40">No courses yet. Create one to get started!</p>
             ) : (
               (coursesQuery.data ?? []).map((course) => (
-                <div key={course.id} className="rounded-2xl border border-slate-100 bg-slate-50 p-4">
-                  <p className="font-semibold text-slate-900">{course.name}</p>
-                  <p className="mt-1 text-sm text-slate-600">Days: {course.numberOfDays}</p>
-                  <p className="text-sm text-slate-600">Start: {course.startDate}</p>
+                <div key={course.id} className="rounded-2xl border border-white/8 bg-white/5 p-4">
+                  <p className="font-semibold text-white">{course.name}</p>
+                  <p className="mt-1 text-sm text-white/50">Days: {course.numberOfDays}</p>
+                  <p className="text-sm text-white/50">Start: {course.startDate}</p>
                 </div>
               ))
             )}

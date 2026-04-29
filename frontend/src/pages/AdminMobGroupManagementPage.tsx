@@ -168,8 +168,8 @@ export function AdminMobGroupManagementPage() {
           <div
             className={`rounded-2xl px-4 py-3 text-sm font-medium ${
               feedback.type === 'success'
-                ? 'bg-emerald-50 text-emerald-700'
-                : 'bg-rose-50 text-rose-700'
+                ? 'bg-emerald-500/10 text-emerald-400'
+                : 'bg-rose-500/10 text-rose-400'
             }`}
           >
             {feedback.message}
@@ -177,15 +177,15 @@ export function AdminMobGroupManagementPage() {
         )}
 
         <section className="grid gap-6 lg:grid-cols-2">
-          <form onSubmit={handleCreateMobGroup} className="rounded-3xl border border-violet-100 bg-violet-50/70 p-5">
-            <h3 className="text-lg font-bold text-slate-900">Create New Mob Group</h3>
+          <form onSubmit={handleCreateMobGroup} className="rounded-3xl border border-violet-500/20 bg-violet-500/8 p-5">
+            <h3 className="text-lg font-bold text-white">Create New Mob Group</h3>
             <div className="mt-4 space-y-4">
               <label className="block">
-                <span className="mb-1 block text-sm font-medium text-slate-700">Select Course</span>
+                <span className="mb-1 block text-sm font-medium text-white/60">Select Course</span>
                 <select
                   value={selectedCourseId}
                   onChange={(e) => setSelectedCourseId(e.target.value)}
-                  className="w-full rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm outline-none focus:border-violet-400"
+                  className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none focus:border-violet-500 [color-scheme:dark]"
                 >
                   <option value="">Choose a course...</option>
                   {(coursesQuery.data ?? []).map((course) => (
@@ -196,42 +196,42 @@ export function AdminMobGroupManagementPage() {
                 </select>
               </label>
               <label className="block">
-                <span className="mb-1 block text-sm font-medium text-slate-700">Mob Group Name</span>
+                <span className="mb-1 block text-sm font-medium text-white/60">Mob Group Name</span>
                 <input
                   value={mobGroupName}
                   onChange={(e) => setMobGroupName(e.target.value)}
                   placeholder="e.g. Mob Alpha"
-                  className="w-full rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm outline-none focus:border-violet-400"
+                  className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-white/25 outline-none focus:border-violet-500"
                 />
               </label>
               <label className="block">
-                <span className="mb-1 block text-sm font-medium text-slate-700">Description (Optional)</span>
+                <span className="mb-1 block text-sm font-medium text-white/60">Description (Optional)</span>
                 <input
                   value={mobGroupDesc}
                   onChange={(e) => setMobGroupDesc(e.target.value)}
                   placeholder="e.g. Frontend specialists"
-                  className="w-full rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm outline-none focus:border-violet-400"
+                  className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-white/25 outline-none focus:border-violet-500"
                 />
               </label>
               <button
                 type="submit"
                 disabled={createMobGroupMutation.isPending}
-                className="w-full rounded-full bg-violet-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-violet-500 disabled:bg-violet-300"
+                className="w-full rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 px-5 py-3 text-sm font-semibold text-white transition hover:from-violet-500 hover:to-fuchsia-500 disabled:opacity-50"
               >
                 {createMobGroupMutation.isPending ? 'Creating...' : 'Create Mob Group'}
               </button>
             </div>
           </form>
 
-          <form onSubmit={handleAssignUserToCourse} className="rounded-3xl border border-slate-100 bg-white/80 p-5">
-            <h3 className="text-lg font-bold text-slate-900">Assign User to Course</h3>
+          <form onSubmit={handleAssignUserToCourse} className="rounded-3xl border border-white/10 bg-white/5 p-5">
+            <h3 className="text-lg font-bold text-white">Assign User to Course</h3>
             <div className="mt-4 space-y-4">
               <label className="block">
-                <span className="mb-1 block text-sm font-medium text-slate-700">User</span>
+                <span className="mb-1 block text-sm font-medium text-white/60">User</span>
                 <select
                   value={selectedUserForCourse}
                   onChange={(e) => setSelectedUserForCourse(e.target.value)}
-                  className="w-full rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm outline-none focus:border-violet-400"
+                  className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none focus:border-violet-500 [color-scheme:dark]"
                 >
                   <option value="">Choose a user...</option>
                   {(usersQuery.data ?? []).map((user) => (
@@ -242,11 +242,11 @@ export function AdminMobGroupManagementPage() {
                 </select>
               </label>
               <label className="block">
-                <span className="mb-1 block text-sm font-medium text-slate-700">Course</span>
+                <span className="mb-1 block text-sm font-medium text-white/60">Course</span>
                 <select
                   value={selectedCourseForUser}
                   onChange={(e) => setSelectedCourseForUser(e.target.value)}
-                  className="w-full rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm outline-none focus:border-violet-400"
+                  className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none focus:border-violet-500 [color-scheme:dark]"
                 >
                   <option value="">Choose a course...</option>
                   {(coursesQuery.data ?? []).map((course) => (
@@ -259,7 +259,7 @@ export function AdminMobGroupManagementPage() {
               <button
                 type="submit"
                 disabled={assignUserToCourseMutation.isPending}
-                className="w-full rounded-full bg-violet-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-violet-500 disabled:bg-violet-300"
+                className="w-full rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 px-5 py-3 text-sm font-semibold text-white transition hover:from-violet-500 hover:to-fuchsia-500 disabled:opacity-50"
               >
                 {assignUserToCourseMutation.isPending ? 'Assigning...' : 'Assign User to Course'}
               </button>
@@ -267,15 +267,15 @@ export function AdminMobGroupManagementPage() {
           </form>
         </section>
 
-        <form onSubmit={handleAssignUserToMobGroup} className="rounded-3xl border border-slate-100 bg-white/80 p-5">
-          <h3 className="text-lg font-bold text-slate-900">Assign User to Mob Group</h3>
+        <form onSubmit={handleAssignUserToMobGroup} className="rounded-3xl border border-white/10 bg-white/5 p-5">
+          <h3 className="text-lg font-bold text-white">Assign User to Mob Group</h3>
           <div className="mt-4 grid gap-4 md:grid-cols-3">
             <label className="block">
-              <span className="mb-1 block text-sm font-medium text-slate-700">Course</span>
+              <span className="mb-1 block text-sm font-medium text-white/60">Course</span>
               <select
                 value={selectedCourseForMobGroup}
                 onChange={(e) => setSelectedCourseForMobGroup(e.target.value)}
-                className="w-full rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm outline-none focus:border-violet-400"
+                className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none focus:border-violet-500 [color-scheme:dark]"
               >
                 <option value="">Choose a course...</option>
                 {(coursesQuery.data ?? []).map((course) => (
@@ -287,11 +287,11 @@ export function AdminMobGroupManagementPage() {
             </label>
 
             <label className="block">
-              <span className="mb-1 block text-sm font-medium text-slate-700">User</span>
+              <span className="mb-1 block text-sm font-medium text-white/60">User</span>
               <select
                 value={selectedUserForMobGroup}
                 onChange={(e) => setSelectedUserForMobGroup(e.target.value)}
-                className="w-full rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm outline-none focus:border-violet-400"
+                className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none focus:border-violet-500 [color-scheme:dark]"
               >
                 <option value="">Choose a user...</option>
                 {selectedCourseUsers.map((user) => (
@@ -303,11 +303,11 @@ export function AdminMobGroupManagementPage() {
             </label>
 
             <label className="block">
-              <span className="mb-1 block text-sm font-medium text-slate-700">Mob Group</span>
+              <span className="mb-1 block text-sm font-medium text-white/60">Mob Group</span>
               <select
                 value={selectedMobGroupForUser}
                 onChange={(e) => setSelectedMobGroupForUser(e.target.value)}
-                className="w-full rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm outline-none focus:border-violet-400"
+                className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none focus:border-violet-500 [color-scheme:dark]"
               >
                 <option value="">Choose a mob group...</option>
                 {(mobGroupsQuery.data ?? []).map((mobGroup) => (
@@ -322,7 +322,7 @@ export function AdminMobGroupManagementPage() {
           <button
             type="submit"
             disabled={assignUserToMobGroupMutation.isPending}
-            className="mt-4 w-full rounded-full bg-violet-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-violet-500 disabled:bg-violet-300"
+            className="mt-4 w-full rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 px-5 py-3 text-sm font-semibold text-white transition hover:from-violet-500 hover:to-fuchsia-500 disabled:opacity-50"
           >
             {assignUserToMobGroupMutation.isPending ? 'Assigning...' : 'Assign User to Mob Group'}
           </button>

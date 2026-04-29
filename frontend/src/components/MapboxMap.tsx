@@ -354,14 +354,14 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
 
   if (!courseId) {
     return (
-      <div className="flex h-full items-center justify-center rounded-3xl border border-dashed border-violet-200 bg-violet-50/60 px-6 text-center text-sm text-slate-600">
+      <div className="flex h-full items-center justify-center rounded-3xl border border-dashed border-violet-500/25 bg-violet-500/8 px-6 text-center text-sm text-white/60">
         Select a course to load the map and afterwork locations.
       </div>
     )
   }
 
   return (
-    <div className="relative h-full min-h-[24rem] w-full overflow-hidden rounded-3xl bg-slate-100 transition-colors">
+    <div className="relative h-full min-h-[24rem] w-full overflow-hidden rounded-3xl bg-[#0c0618] transition-colors">
       <div ref={mapContainer} className="h-full w-full" />
 
       {mapError && (
@@ -374,7 +374,7 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
       )}
 
       {locationsQuery.isError ? (
-        <div className="pointer-events-none absolute left-4 top-4 z-20 max-w-sm rounded-2xl border border-rose-200 bg-rose-50/95 px-4 py-3 text-sm text-rose-700 shadow-xl backdrop-blur">
+        <div className="pointer-events-none absolute left-4 top-4 z-20 max-w-sm rounded-2xl border border-rose-500/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-400 shadow-xl backdrop-blur">
           {locationsQuery.error instanceof Error ? locationsQuery.error.message : 'Failed to load locations.'}
         </div>
       ) : null}
@@ -383,8 +383,8 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
         <div
           className={`absolute right-4 top-4 z-10 rounded-2xl px-4 py-3 text-sm font-medium shadow-xl backdrop-blur ${
             feedback.type === 'success'
-              ? 'bg-emerald-50 text-emerald-700'
-              : 'bg-rose-50 text-rose-700'
+              ? 'bg-emerald-500/10 text-emerald-400'
+              : 'bg-rose-500/10 text-rose-400'
           }`}
         >
           {feedback.message}
@@ -394,20 +394,20 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
       {draftPoint && (
         <form
           onSubmit={handleCreateLocation}
-          className="absolute bottom-4 left-4 z-10 w-[calc(100%-2rem)] max-w-sm rounded-3xl border border-slate-200 bg-white/95 p-4 shadow-2xl backdrop-blur"
+          className="absolute bottom-4 left-4 z-10 w-[calc(100%-2rem)] max-w-sm rounded-3xl border border-white/10 bg-[#160d26]/95 p-4 shadow-2xl backdrop-blur"
         >
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-violet-500">New Suggestion</p>
-          <p className="mt-2 text-sm text-slate-500">
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-violet-400">New Suggestion</p>
+          <p className="mt-2 text-sm text-white/40">
             {draftPoint.lat.toFixed(4)}, {draftPoint.lng.toFixed(4)}
           </p>
 
           <label className="mt-3 block">
-            <span className="mb-1 block text-sm font-medium text-slate-700">Location name</span>
+            <span className="mb-1 block text-sm font-medium text-white/60">Location name</span>
             <input
               value={locationName}
               onChange={(event) => setLocationName(event.target.value)}
               placeholder="Kaffebaren, rooftop bar, ..."
-              className="w-full rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm outline-none focus:border-violet-400 focus:ring-4 focus:ring-violet-200/60"
+              className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-white/25 outline-none focus:border-violet-500"
             />
           </label>
 
@@ -415,14 +415,14 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
             <button
               type="submit"
               disabled={createMutation.isPending}
-              className="flex-1 rounded-full bg-violet-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-violet-500 disabled:bg-violet-300"
+              className="flex-1 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 px-4 py-3 text-sm font-semibold text-white transition hover:from-violet-500 hover:to-fuchsia-500 disabled:opacity-50"
             >
               {createMutation.isPending ? 'Saving...' : 'Save suggestion'}
             </button>
             <button
               type="button"
               onClick={() => setDraftPoint(null)}
-              className="rounded-full border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+              className="rounded-full border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white/70 transition hover:bg-white/10"
             >
               Cancel
             </button>
@@ -431,11 +431,11 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
       )}
 
       {selectedLocation && (
-        <div className="absolute bottom-4 left-4 z-10 w-[calc(100%-2rem)] max-w-sm rounded-3xl border border-slate-200 bg-white/95 p-4 shadow-2xl backdrop-blur">
+        <div className="absolute bottom-4 left-4 z-10 w-[calc(100%-2rem)] max-w-sm rounded-3xl border border-white/10 bg-[#160d26]/95 p-4 shadow-2xl backdrop-blur">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-violet-500">Selected Location</p>
-              <h3 className="mt-2 text-lg font-bold text-slate-900">{selectedLocation.name}</h3>
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-violet-400">Selected Location</p>
+              <h3 className="mt-2 text-lg font-bold text-white">{selectedLocation.name}</h3>
             </div>
             <button
               type="button"
@@ -443,13 +443,13 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
                 setSelectedLocationId(null)
                 setSelectedLocationName('')
               }}
-              className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-50"
+              className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-white/60 transition hover:bg-white/10"
             >
               Close
             </button>
           </div>
 
-          <div className="mt-3 grid gap-2 rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-600">
+          <div className="mt-3 grid gap-2 rounded-2xl border border-white/8 bg-white/5 px-4 py-3 text-sm text-white/60">
             <p>Votes: {selectedLocation.voteCount}</p>
             <p>Suggested by: {selectedLocation.createdByName}</p>
             <p>
@@ -461,11 +461,11 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
             {canManageSelectedLocation ? (
               <form onSubmit={handleUpdateLocation} className="space-y-3">
                 <label className="block">
-                  <span className="mb-1 block text-sm font-medium text-slate-700">Rename location</span>
+                  <span className="mb-1 block text-sm font-medium text-white/60">Rename location</span>
                   <input
                     value={selectedLocationName}
                     onChange={(event) => setSelectedLocationName(event.target.value)}
-                    className="w-full rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm outline-none focus:border-violet-400 focus:ring-4 focus:ring-violet-200/60"
+                    className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none focus:border-violet-500"
                   />
                 </label>
 
@@ -473,7 +473,7 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
                   <button
                     type="submit"
                     disabled={updateMutation.isPending}
-                    className="flex-1 rounded-full bg-violet-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-violet-500 disabled:bg-violet-300"
+                    className="flex-1 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 px-4 py-3 text-sm font-semibold text-white transition hover:from-violet-500 hover:to-fuchsia-500 disabled:opacity-50"
                   >
                     {updateMutation.isPending ? 'Saving...' : 'Save changes'}
                   </button>
@@ -481,14 +481,14 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
                     type="button"
                     onClick={() => deleteMutation.mutate(selectedLocation.id)}
                     disabled={deleteMutation.isPending}
-                    className="rounded-full border border-rose-200 bg-white px-4 py-3 text-sm font-semibold text-rose-700 transition hover:bg-rose-50 disabled:opacity-60"
+                    className="rounded-full border border-rose-500/20 bg-rose-500/8 px-4 py-3 text-sm font-semibold text-rose-400 transition hover:bg-rose-500/15 disabled:opacity-60"
                   >
                     {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
                   </button>
                 </div>
               </form>
             ) : (
-              <p className="text-sm text-slate-600">You can vote on this location, but only the creator or an admin can edit it.</p>
+              <p className="text-sm text-white/50">You can vote on this location, but only the creator or an admin can edit it.</p>
             )}
 
             <div className="flex gap-2">
@@ -496,7 +496,7 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
                 type="button"
                 onClick={() => voteMutation.mutate(selectedLocation.id)}
                 disabled={selectedLocation.votedByCurrentUser || voteMutation.isPending}
-                className="flex-1 rounded-full bg-violet-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-violet-500 disabled:bg-violet-300"
+                className="flex-1 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 px-4 py-3 text-sm font-semibold text-white transition hover:from-violet-500 hover:to-fuchsia-500 disabled:opacity-50"
               >
                 {selectedLocation.votedByCurrentUser ? 'Already voted' : voteMutation.isPending ? 'Voting...' : 'Vote'}
               </button>
@@ -505,7 +505,7 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
                   type="button"
                   onClick={() => removeVoteMutation.mutate(selectedLocation.id)}
                   disabled={removeVoteMutation.isPending}
-                  className="rounded-full border border-violet-200 bg-white px-4 py-3 text-sm font-semibold text-violet-700 transition hover:bg-violet-50 disabled:opacity-60"
+                  className="rounded-full border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white/70 transition hover:bg-white/10 disabled:opacity-60"
                 >
                   {removeVoteMutation.isPending ? 'Removing...' : 'Remove vote'}
                 </button>
@@ -515,7 +515,7 @@ export function MapboxMap({ courseId = null }: MapboxMapProps) {
         </div>
       )}
 
-      <div className="absolute bottom-4 right-4 z-10 rounded-full border border-slate-200 bg-white/90 px-3 py-1.5 text-xs font-semibold text-slate-800 shadow-lg backdrop-blur">
+      <div className="absolute bottom-4 right-4 z-10 rounded-full border border-white/10 bg-[#160d26]/90 px-3 py-1.5 text-xs font-semibold text-white/60 shadow-lg backdrop-blur">
         {locationsQuery.data?.length ?? 0}
       </div>
     </div>

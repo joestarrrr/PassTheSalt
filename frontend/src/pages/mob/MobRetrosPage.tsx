@@ -176,24 +176,24 @@ export function MobRetrosPage() {
     <MobLayout title="Daily Retros" description="Reflect on your day with your mob group and submit your insights.">
       <div className="mx-auto w-full max-w-6xl">
         {isNotAssigned && (
-          <div className="mb-6 rounded-2xl bg-amber-50 px-5 py-4 text-sm font-medium text-amber-800 border border-amber-200">
+          <div className="mb-6 rounded-2xl bg-amber-500/10 px-5 py-4 text-sm font-medium text-amber-400 border border-amber-500/20">
             ⚠️ You are not assigned to a mob group or course yet. Contact your admin to get assigned before submitting a retro.
           </div>
         )}
         <div className="grid gap-6 lg:grid-cols-[1fr_1.5fr]">
           {/* Days Sidebar */}
-          <div className="rounded-3xl border border-slate-100 bg-white/90 shadow-sm">
-            <div className="border-b border-slate-100 px-6 py-4 sm:px-8">
-              <h3 className="text-lg font-bold text-slate-900">📅 Course Days</h3>
+          <div className="rounded-3xl border border-white/10 bg-[#160d26]">
+            <div className="border-b border-white/8 px-6 py-4 sm:px-8">
+              <h3 className="text-lg font-bold text-white">📅 Course Days</h3>
             </div>
 
             {userContextQuery.isLoading ? (
               <div className="px-6 py-8 text-center sm:px-8">
-                <p className="text-sm text-slate-600">Loading days...</p>
+                <p className="text-sm text-white/40">Loading days...</p>
               </div>
             ) : allDays.length === 0 ? (
               <div className="px-6 py-8 text-center sm:px-8">
-                <p className="text-sm text-slate-600">No course days available yet</p>
+                <p className="text-sm text-white/40">No course days available yet</p>
               </div>
             ) : (
               <>
@@ -224,8 +224,8 @@ export function MobRetrosPage() {
                       key={day.id}
                       className={`w-full rounded-2xl px-4 py-4 text-left text-sm font-medium transition-all ${
                         selectedDayId === day.id
-                          ? 'bg-violet-600 text-white shadow-md'
-                          : 'bg-slate-50 text-slate-900 hover:bg-slate-100'
+                          ? 'bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white shadow-lg shadow-violet-500/25'
+                          : 'bg-white/5 text-white hover:bg-white/10'
                       }`}
                     >
                       <div className="flex items-center justify-between gap-2">
@@ -235,7 +235,7 @@ export function MobRetrosPage() {
                             className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
                               selectedDayId === day.id
                                 ? 'bg-white/20 text-white'
-                                : 'bg-emerald-100 text-emerald-700'
+                                : 'bg-emerald-500/15 text-emerald-400'
                             }`}
                           >
                             Done
@@ -249,22 +249,22 @@ export function MobRetrosPage() {
                 </div>
 
                 {totalPages > 1 && (
-                  <div className="border-t border-slate-100 px-6 py-4 sm:px-8">
+                  <div className="border-t border-white/8 px-6 py-4 sm:px-8">
                     <div className="flex items-center justify-between gap-2">
                       <button
                         onClick={() => setDaysPage(Math.max(0, daysPage - 1))}
                         disabled={daysPage === 0}
-                        className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50 disabled:opacity-50"
+                        className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-white/60 hover:bg-white/10 disabled:opacity-40"
                       >
                         ← Prev
                       </button>
-                      <span className="text-xs text-slate-600">
+                      <span className="text-xs text-white/40">
                         Page {daysPage + 1} of {totalPages}
                       </span>
                       <button
                         onClick={() => setDaysPage(Math.min(totalPages - 1, daysPage + 1))}
                         disabled={daysPage === totalPages - 1}
-                        className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50 disabled:opacity-50"
+                        className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-white/60 hover:bg-white/10 disabled:opacity-40"
                       >
                         Next →
                       </button>
@@ -276,9 +276,9 @@ export function MobRetrosPage() {
           </div>
 
           {/* Retro Form */}
-          <div className="rounded-3xl border border-violet-100 bg-gradient-to-br from-violet-50/80 to-white/80 shadow-sm">
-            <div className="border-b border-violet-100 px-6 py-4 sm:px-8">
-              <h3 className="text-lg font-bold text-slate-900">✨ Retro Reflection</h3>
+          <div className="rounded-3xl border border-white/10 bg-[#160d26]">
+            <div className="border-b border-white/8 px-6 py-4 sm:px-8">
+              <h3 className="text-lg font-bold text-white">✨ Retro Reflection</h3>
             </div>
 
             <form onSubmit={handleSubmitRetro} className="space-y-5 px-6 py-6 sm:px-8">
@@ -286,8 +286,8 @@ export function MobRetrosPage() {
                 <div
                   className={`rounded-2xl px-4 py-3 text-sm font-medium transition-all ${
                     feedback.type === 'success'
-                      ? 'border border-emerald-200 bg-emerald-50 text-emerald-800'
-                      : 'border border-rose-200 bg-rose-50 text-rose-800'
+                      ? 'border border-emerald-500/20 bg-emerald-500/10 text-emerald-400'
+                      : 'border border-rose-500/20 bg-rose-500/10 text-rose-400'
                   }`}
                 >
                   {feedback.message}
@@ -295,49 +295,49 @@ export function MobRetrosPage() {
               )}
 
               {!selectedDayId ? (
-                <div className="rounded-2xl border border-blue-200 bg-blue-50/60 px-4 py-4 text-sm text-blue-800">
+                <div className="rounded-2xl border border-violet-500/20 bg-violet-500/8 px-4 py-4 text-sm text-white/60">
                   👈 Select a course day to begin
                 </div>
               ) : (
                 <>
-                  <div className="rounded-2xl border border-slate-200 bg-white/60 px-4 py-3 text-sm text-slate-700">
+                  <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white/70">
                     <p className="font-semibold">📍 Day {selectedDay?.dayNumber}</p>
-                    <p className="mt-1 text-xs text-slate-600">{selectedDay?.date}</p>
+                    <p className="mt-1 text-xs text-white/40">{selectedDay?.date}</p>
                   </div>
 
                   {selectedDayRetro && !isEditingExisting ? (
-                    <div className="space-y-4 rounded-2xl border border-emerald-200 bg-emerald-50/60 p-4 text-sm text-slate-700">
-                      <p className="font-semibold text-emerald-800">✅ This day is completed. You can review your submitted retro below.</p>
+                    <div className="space-y-4 rounded-2xl border border-emerald-500/20 bg-emerald-500/8 p-4 text-sm text-white/70">
+                      <p className="font-semibold text-emerald-400">✅ This day is completed. You can review your submitted retro below.</p>
 
-                      <div className="rounded-xl bg-white px-4 py-3">
-                        <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Lecture</p>
-                        <p className="mt-1 text-sm font-medium text-slate-900">{selectedDayRetro.lectureName || 'No lecture name'}</p>
+                      <div className="rounded-xl bg-white/5 border border-white/8 px-4 py-3">
+                        <p className="text-xs font-semibold uppercase tracking-wide text-white/40">Lecture</p>
+                        <p className="mt-1 text-sm font-medium text-white">{selectedDayRetro.lectureName || 'No lecture name'}</p>
                       </div>
 
-                      <div className="rounded-xl bg-white px-4 py-3">
-                        <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Start of Day</p>
-                        <p className="mt-1 whitespace-pre-wrap text-sm text-slate-900">{selectedDayRetro.startOfDay || 'No note'}</p>
+                      <div className="rounded-xl bg-white/5 border border-white/8 px-4 py-3">
+                        <p className="text-xs font-semibold uppercase tracking-wide text-white/40">Start of Day</p>
+                        <p className="mt-1 whitespace-pre-wrap text-sm text-white">{selectedDayRetro.startOfDay || 'No note'}</p>
                       </div>
 
                       <div className="grid gap-3 sm:grid-cols-2">
-                        <div className="rounded-xl bg-white px-4 py-3">
-                          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Worked Well</p>
-                          <p className="mt-1 whitespace-pre-wrap text-sm text-slate-900">{selectedDayRetro.workedWell || 'No entry'}</p>
+                        <div className="rounded-xl bg-white/5 border border-white/8 px-4 py-3">
+                          <p className="text-xs font-semibold uppercase tracking-wide text-white/40">Worked Well</p>
+                          <p className="mt-1 whitespace-pre-wrap text-sm text-white">{selectedDayRetro.workedWell || 'No entry'}</p>
                         </div>
-                        <div className="rounded-xl bg-white px-4 py-3">
-                          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Learned</p>
-                          <p className="mt-1 whitespace-pre-wrap text-sm text-slate-900">{selectedDayRetro.learned || 'No entry'}</p>
+                        <div className="rounded-xl bg-white/5 border border-white/8 px-4 py-3">
+                          <p className="text-xs font-semibold uppercase tracking-wide text-white/40">Learned</p>
+                          <p className="mt-1 whitespace-pre-wrap text-sm text-white">{selectedDayRetro.learned || 'No entry'}</p>
                         </div>
                       </div>
 
-                      <div className="rounded-xl bg-white px-4 py-3">
-                        <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Improve</p>
-                        <p className="mt-1 whitespace-pre-wrap text-sm text-slate-900">{selectedDayRetro.improve || 'No entry'}</p>
+                      <div className="rounded-xl bg-white/5 border border-white/8 px-4 py-3">
+                        <p className="text-xs font-semibold uppercase tracking-wide text-white/40">Improve</p>
+                        <p className="mt-1 whitespace-pre-wrap text-sm text-white">{selectedDayRetro.improve || 'No entry'}</p>
                       </div>
 
-                      <div className="flex items-center justify-between rounded-xl bg-white px-4 py-3">
-                        <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Rating</p>
-                        <p className="text-sm font-bold text-violet-700">{'★'.repeat(selectedDayRetro.rating)}{'☆'.repeat(5 - selectedDayRetro.rating)}</p>
+                      <div className="flex items-center justify-between rounded-xl bg-white/5 border border-white/8 px-4 py-3">
+                        <p className="text-xs font-semibold uppercase tracking-wide text-white/40">Rating</p>
+                        <p className="text-sm font-bold text-violet-400">{'★'.repeat(selectedDayRetro.rating)}{'☆'.repeat(5 - selectedDayRetro.rating)}</p>
                       </div>
 
                       <button
@@ -347,7 +347,7 @@ export function MobRetrosPage() {
                           setIsEditingExisting(true)
                           setFeedback(null)
                         }}
-                        className="w-full rounded-full bg-violet-600 px-5 py-3 text-sm font-semibold text-white hover:bg-violet-500"
+                        className="w-full rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 px-5 py-3 text-sm font-semibold text-white hover:from-violet-500 hover:to-fuchsia-500"
                       >
                         Edit Retro
                       </button>
@@ -355,61 +355,61 @@ export function MobRetrosPage() {
                   ) : (
                     <>
                       <label className="block">
-                        <span className="mb-2 block text-sm font-semibold text-slate-800">🎯 Start of Day Note *</span>
+                        <span className="mb-2 block text-sm font-semibold text-white">🎯 Start of Day Note *</span>
                         <textarea
                           value={startOfDay}
                           onChange={(e) => setStartOfDay(e.target.value)}
                           placeholder="What was your focus for the day?"
                           rows={2}
-                          className="w-full rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-violet-400 focus:ring-4 focus:ring-violet-200/60"
+                          className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-white/25 outline-none transition focus:border-violet-500"
                         />
                       </label>
 
                       <label className="block">
-                        <span className="mb-2 block text-sm font-semibold text-slate-800">👏 What Worked Well?</span>
+                        <span className="mb-2 block text-sm font-semibold text-white">👏 What Worked Well?</span>
                         <textarea
                           value={workedWell}
                           onChange={(e) => setWorkedWell(e.target.value)}
                           placeholder="Successes and positive moments..."
                           rows={2}
-                          className="w-full rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-violet-400 focus:ring-4 focus:ring-violet-200/60"
+                          className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-white/25 outline-none transition focus:border-violet-500"
                         />
                       </label>
 
                       <label className="block">
-                        <span className="mb-2 block text-sm font-semibold text-slate-800">💡 What Did You Learn?</span>
+                        <span className="mb-2 block text-sm font-semibold text-white">💡 What Did You Learn?</span>
                         <textarea
                           value={learned}
                           onChange={(e) => setLearned(e.target.value)}
                           placeholder="Key takeaways and insights..."
                           rows={2}
-                          className="w-full rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-violet-400 focus:ring-4 focus:ring-violet-200/60"
+                          className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-white/25 outline-none transition focus:border-violet-500"
                         />
                       </label>
 
                       <label className="block">
-                        <span className="mb-2 block text-sm font-semibold text-slate-800">🔄 Areas for Improvement?</span>
+                        <span className="mb-2 block text-sm font-semibold text-white">🔄 Areas for Improvement?</span>
                         <textarea
                           value={improve}
                           onChange={(e) => setImprove(e.target.value)}
                           placeholder="What can be better next time..."
                           rows={2}
-                          className="w-full rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-violet-400 focus:ring-4 focus:ring-violet-200/60"
+                          className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-white/25 outline-none transition focus:border-violet-500"
                         />
                       </label>
 
                       <label className="block">
-                        <span className="mb-2 block text-sm font-semibold text-slate-800">🏷️ Lecture Name (Optional)</span>
+                        <span className="mb-2 block text-sm font-semibold text-white">🏷️ Lecture Name (Optional)</span>
                         <input
                           value={lectureName}
                           onChange={(e) => setLectureName(e.target.value)}
                           placeholder="e.g. React Hooks, State Management"
-                          className="w-full rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-violet-400 focus:ring-4 focus:ring-violet-200/60"
+                          className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-white/25 outline-none transition focus:border-violet-500"
                         />
                       </label>
 
                       <label className="block">
-                        <span className="mb-3 block text-sm font-semibold text-slate-800">⭐ Day Rating</span>
+                        <span className="mb-3 block text-sm font-semibold text-white">⭐ Day Rating</span>
                         <div className="flex gap-2">
                           {[1, 2, 3, 4, 5].map((r) => (
                             <button
@@ -418,8 +418,8 @@ export function MobRetrosPage() {
                               onClick={() => setRating(r)}
                               className={`flex-1 rounded-full py-2 text-sm font-bold transition-all ${
                                 rating === r
-                                  ? 'bg-violet-600 text-white shadow-md'
-                                  : 'bg-white text-violet-600 ring-2 ring-violet-200 hover:ring-violet-300'
+                                  ? 'bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white shadow-md'
+                                  : 'bg-white/5 text-white/60 ring-1 ring-white/15 hover:bg-white/10'
                               }`}
                             >
                               {r}
@@ -432,7 +432,7 @@ export function MobRetrosPage() {
                         <button
                           type="submit"
                           disabled={submitMutation.isPending || updateMutation.isPending}
-                          className="w-full rounded-full bg-gradient-to-r from-violet-600 to-violet-500 px-6 py-4 text-sm font-bold text-white shadow-lg transition hover:shadow-xl disabled:opacity-70"
+                          className="w-full rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 px-6 py-4 text-sm font-bold text-white shadow-lg transition hover:from-violet-500 hover:to-fuchsia-500 disabled:opacity-70"
                         >
                           {isEditingExisting
                             ? (updateMutation.isPending ? '⏳ Saving...' : '✓ Save Changes')
@@ -449,7 +449,7 @@ export function MobRetrosPage() {
                               }
                               setFeedback(null)
                             }}
-                            className="w-full rounded-full bg-white px-6 py-4 text-sm font-semibold text-violet-700 ring-1 ring-inset ring-violet-200 hover:bg-violet-50"
+                            className="w-full rounded-full border border-white/10 bg-white/5 px-6 py-4 text-sm font-semibold text-white/70 hover:bg-white/10"
                           >
                             Cancel
                           </button>
