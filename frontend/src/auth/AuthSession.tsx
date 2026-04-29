@@ -44,10 +44,14 @@ export function AuthSessionProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let cancelled = false
+    let intervalId: number | undefined
 
     if (!isLoaded) {
       return () => {
         cancelled = true
+        if (intervalId) {
+          window.clearInterval(intervalId)
+        }
       }
     }
 
@@ -56,25 +60,50 @@ export function AuthSessionProvider({ children }: { children: ReactNode }) {
       setAuthToken('')
       return () => {
         cancelled = true
+        if (intervalId) {
+          window.clearInterval(intervalId)
+        }
       }
     }
 
-    void getToken().then((token) => {
+    if (authToken) {
+      return () => {
+        cancelled = true
+      }
+    }
+
+    const syncToken = async () => {
+      const token = await getToken()
+
       if (cancelled) {
         return
       }
 
       const nextToken = token?.trim() ?? ''
-      setAuthToken(nextToken)
-      if (nextToken) {
-        setSessionToken(nextToken)
+      if (!nextToken) {
+        return
       }
-    })
+
+      setAuthToken(nextToken)
+      setSessionToken(nextToken)
+
+      if (intervalId) {
+        window.clearInterval(intervalId)
+      }
+    }
+
+    void syncToken()
+    intervalId = window.setInterval(() => {
+      void syncToken()
+    }, 800)
 
     return () => {
       cancelled = true
+      if (intervalId) {
+        window.clearInterval(intervalId)
+      }
     }
-  }, [getToken, isLoaded, isSignedIn])
+  }, [authToken, getToken, isLoaded, isSignedIn])
 
   const currentUserQuery = useQuery<BackendUser>({
     queryKey: ['current-user', authToken],

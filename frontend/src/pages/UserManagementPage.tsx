@@ -90,7 +90,7 @@ export function UserManagementPage() {
 
                         assignCourseMutation.mutate({ userId: user.id, courseId })
                       }}
-                      className="w-full rounded-2xl border border-violet-200 bg-white px-4 py-2 text-sm text-slate-900 outline-none focus:border-violet-400 focus:ring-4 focus:ring-violet-200/60 sm:w-auto"
+                      className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-white outline-none focus:border-violet-500 [color-scheme:dark] sm:w-auto"
                     >
                       <option value="">Assign course...</option>
                       {(coursesQuery.data ?? []).map((course) => (
