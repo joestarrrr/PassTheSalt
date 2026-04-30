@@ -21,6 +21,14 @@ type AfterworkEventsManagementProps = {
   courseId?: number | null
 }
 
+function getTodayIsoDate() {
+  const now = new Date()
+  const year = now.getFullYear()
+  const month = String(now.getMonth() + 1).padStart(2, '0')
+  const day = String(now.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
 function formatDateForUi(dateValue: string) {
   const date = new Date(`${dateValue}T00:00:00`)
   return Number.isNaN(date.getTime())
@@ -40,12 +48,15 @@ function mapEventForUi(event: AfterworkEventResponse): AfterworkEventItem {
 
 export function AfterworkEventsManagement({ apiScope = 'admin', courseId = null }: AfterworkEventsManagementProps) {
   const queryClient = useQueryClient()
+  const todayIsoDate = getTodayIsoDate()
   const [name, setName] = useState('')
   const [date, setDate] = useState('')
   const [editingEventId, setEditingEventId] = useState<number | null>(null)
   const [editName, setEditName] = useState('')
   const [editDate, setEditDate] = useState('')
-  const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
+  const [pendingUpdateEventId, setPendingUpdateEventId] = useState<number | null>(null)
+  const [pendingDeleteEventId, setPendingDeleteEventId] = useState<number | null>(null)
+  const [feedback, setFeedback] = useState<{ type: 'success' | 'error' | 'info'; message: string } | null>(null)
 
   const api =
     apiScope === 'admin'
@@ -73,6 +84,9 @@ export function AfterworkEventsManagement({ apiScope = 'admin', courseId = null 
         title: variables.title,
         eventDate: variables.eventDate,
       }) as Promise<AfterworkEventResponse>,
+    onMutate: () => {
+      setFeedback({ type: 'info', message: 'Creating event...' })
+    },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['afterwork-events', apiScope] })
       setName('')
@@ -90,6 +104,10 @@ export function AfterworkEventsManagement({ apiScope = 'admin', courseId = null 
         title: variables.title,
         eventDate: variables.eventDate,
       }) as Promise<AfterworkEventResponse>,
+    onMutate: (variables) => {
+      setPendingUpdateEventId(variables.eventId)
+      setFeedback({ type: 'info', message: 'Saving event changes...' })
+    },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['afterwork-events', apiScope] })
       setEditingEventId(null)
@@ -100,16 +118,26 @@ export function AfterworkEventsManagement({ apiScope = 'admin', courseId = null 
     onError: (error) => {
       setFeedback({ type: 'error', message: error instanceof Error ? error.message : 'Failed to update event.' })
     },
+    onSettled: () => {
+      setPendingUpdateEventId(null)
+    },
   })
 
   const deleteMutation = useMutation({
     mutationFn: (eventId: number) => api.deleteAfterworkEvent(eventId),
+    onMutate: (eventId) => {
+      setPendingDeleteEventId(eventId)
+      setFeedback({ type: 'info', message: 'Deleting event...' })
+    },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['afterwork-events', apiScope] })
       setFeedback({ type: 'success', message: 'Afterwork event deleted.' })
     },
     onError: (error) => {
       setFeedback({ type: 'error', message: error instanceof Error ? error.message : 'Failed to delete event.' })
+    },
+    onSettled: () => {
+      setPendingDeleteEventId(null)
     },
   })
 
@@ -119,6 +147,12 @@ export function AfterworkEventsManagement({ apiScope = 'admin', courseId = null 
     event.preventDefault()
 
     if (!name.trim() || !date.trim()) {
+      setFeedback({ type: 'error', message: 'Event name and date are required.' })
+      return
+    }
+
+    if (date < todayIsoDate) {
+      setFeedback({ type: 'error', message: 'You cannot create an afterwork event in the past.' })
       return
     }
 
@@ -141,6 +175,11 @@ export function AfterworkEventsManagement({ apiScope = 'admin', courseId = null 
   const handleUpdateEvent = (eventId: number) => {
     if (!editName.trim() || !editDate.trim()) {
       setFeedback({ type: 'error', message: 'Event name and date are required.' })
+      return
+    }
+
+    if (editDate < todayIsoDate) {
+      setFeedback({ type: 'error', message: 'You cannot move an afterwork event to a past date.' })
       return
     }
 
@@ -175,12 +214,17 @@ export function AfterworkEventsManagement({ apiScope = 'admin', courseId = null 
                 type="date"
                 value={date}
                 onChange={(event) => setDate(event.target.value)}
+                min={todayIsoDate}
                 className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none focus:border-violet-500 [color-scheme:dark]"
               />
             </label>
 
-            <button type="submit" className="w-full rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 px-5 py-3 text-sm font-semibold text-white hover:from-violet-500 hover:to-fuchsia-500">
-              Create Event
+            <button
+              type="submit"
+              disabled={createMutation.isPending}
+              className="w-full rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 px-5 py-3 text-sm font-semibold text-white hover:from-violet-500 hover:to-fuchsia-500 disabled:opacity-60"
+            >
+              {createMutation.isPending ? 'Creating event...' : 'Create Event'}
             </button>
           </div>
         </form>
@@ -189,7 +233,7 @@ export function AfterworkEventsManagement({ apiScope = 'admin', courseId = null 
           <h3 className="text-lg font-bold text-white">Current Events</h3>
 
           {feedback && (
-            <div className={`rounded-2xl px-4 py-3 text-sm font-medium ${feedback.type === 'success' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'}`}>
+            <div className={`rounded-2xl px-4 py-3 text-sm font-medium ${feedback.type === 'success' ? 'bg-emerald-500/10 text-emerald-400' : feedback.type === 'info' ? 'bg-sky-500/10 text-sky-300' : 'bg-rose-500/10 text-rose-400'}`}>
               {feedback.message}
             </div>
           )}
@@ -215,6 +259,7 @@ export function AfterworkEventsManagement({ apiScope = 'admin', courseId = null 
                         type="date"
                         value={editDate}
                         onChange={(event) => setEditDate(event.target.value)}
+                        min={todayIsoDate}
                         className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none focus:border-violet-500 [color-scheme:dark]"
                       />
                     </div>
@@ -233,13 +278,15 @@ export function AfterworkEventsManagement({ apiScope = 'admin', courseId = null 
                       <button
                         type="button"
                         onClick={() => handleUpdateEvent(eventItem.id)}
-                        className="w-full rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 px-4 py-2 text-sm font-semibold text-white hover:from-violet-500 hover:to-fuchsia-500 sm:w-auto"
+                        disabled={updateMutation.isPending && pendingUpdateEventId === eventItem.id}
+                        className="w-full rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 px-4 py-2 text-sm font-semibold text-white hover:from-violet-500 hover:to-fuchsia-500 disabled:opacity-60 sm:w-auto"
                       >
-                        Save
+                        {updateMutation.isPending && pendingUpdateEventId === eventItem.id ? 'Saving...' : 'Save'}
                       </button>
                       <button
                         type="button"
                         onClick={cancelEditingEvent}
+                        disabled={updateMutation.isPending && pendingUpdateEventId === eventItem.id}
                         className="w-full rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white/70 hover:bg-white/10 sm:w-auto"
                       >
                         Cancel
@@ -258,9 +305,10 @@ export function AfterworkEventsManagement({ apiScope = 'admin', courseId = null 
                   <button
                     type="button"
                     onClick={() => deleteMutation.mutate(eventItem.id)}
-                    className="w-full rounded-full border border-rose-500/20 bg-rose-500/8 px-4 py-2 text-sm font-semibold text-rose-400 hover:bg-rose-500/15 sm:w-auto"
+                    disabled={deleteMutation.isPending && pendingDeleteEventId === eventItem.id}
+                    className="w-full rounded-full border border-rose-500/20 bg-rose-500/8 px-4 py-2 text-sm font-semibold text-rose-400 hover:bg-rose-500/15 disabled:opacity-60 sm:w-auto"
                   >
-                    Delete
+                    {deleteMutation.isPending && pendingDeleteEventId === eventItem.id ? 'Deleting...' : 'Delete'}
                   </button>
                 </div>
               </div>
