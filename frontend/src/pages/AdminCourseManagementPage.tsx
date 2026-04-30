@@ -19,6 +19,7 @@ type CreateCourseInput = {
 
 export function AdminCourseManagementPage() {
   const queryClient = useQueryClient()
+  const today = new Date().toISOString().split('T')[0]
   const [courseName, setCourseName] = useState('')
   const [numberOfDaysInput, setNumberOfDaysInput] = useState('1')
   const [startDate, setStartDate] = useState('')
@@ -102,6 +103,7 @@ export function AdminCourseManagementPage() {
                 <input
                   type="date"
                   value={startDate}
+                  min={today}
                   onChange={(e) => setStartDate(e.target.value)}
                   className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/30 [color-scheme:dark]"
                 />
@@ -139,9 +141,20 @@ export function AdminCourseManagementPage() {
             ) : (
               (coursesQuery.data ?? []).map((course) => (
                 <div key={course.id} className="rounded-2xl border border-white/8 bg-white/5 p-4">
-                  <p className="font-semibold text-white">{course.name}</p>
-                  <p className="mt-1 text-sm text-white/50">Days: {course.numberOfDays}</p>
-                  <p className="text-sm text-white/50">Start: {course.startDate}</p>
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="font-semibold text-white">{course.name}</p>
+                      <p className="mt-1 text-sm text-white/50">Days: {course.numberOfDays}</p>
+                      <p className="text-sm text-white/50">Start: {course.startDate}</p>
+                    </div>
+                    <button
+                      type="button"
+                      disabled
+                      className="shrink-0 rounded-xl border border-rose-500/20 bg-rose-500/10 px-3 py-1.5 text-xs font-medium text-rose-400/50 cursor-not-allowed"
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </div>
               ))
             )}
