@@ -20,7 +20,7 @@ type CreateCourseInput = {
 export function AdminCourseManagementPage() {
   const queryClient = useQueryClient()
   const [courseName, setCourseName] = useState('')
-  const [numberOfDays, setNumberOfDays] = useState<number>(1)
+  const [numberOfDaysInput, setNumberOfDaysInput] = useState('1')
   const [startDate, setStartDate] = useState('')
   const [feedback, setFeedback] = useState<Feedback>(null)
 
@@ -39,7 +39,7 @@ export function AdminCourseManagementPage() {
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['courses'] })
       setCourseName('')
-      setNumberOfDays(1)
+      setNumberOfDaysInput('1')
       setStartDate('')
       setFeedback({ type: 'success', message: 'Course created successfully!' })
     },
@@ -51,14 +51,16 @@ export function AdminCourseManagementPage() {
   const handleCreateCourse = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    if (!courseName.trim() || !startDate) {
+    const parsedNumberOfDays = Number.parseInt(numberOfDaysInput, 10)
+
+    if (!courseName.trim() || !startDate || !Number.isFinite(parsedNumberOfDays) || parsedNumberOfDays < 1 || parsedNumberOfDays > 365) {
       setFeedback({ type: 'error', message: 'Please fill in all fields' })
       return
     }
 
     createMutation.mutate({
       name: courseName,
-      numberOfDays,
+      numberOfDays: parsedNumberOfDays,
       startDate,
     })
   }
@@ -85,8 +87,12 @@ export function AdminCourseManagementPage() {
                   type="number"
                   min="1"
                   max="365"
-                  value={numberOfDays}
-                  onChange={(e) => setNumberOfDays(Number(e.target.value))}
+                  value={numberOfDaysInput}
+                  onChange={(e) => {
+                    const digitsOnly = e.target.value.replace(/\D/g, '')
+                    const withoutLeadingZeros = digitsOnly.replace(/^0+(?=\d)/, '')
+                    setNumberOfDaysInput(withoutLeadingZeros)
+                  }}
                   className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/30"
                 />
               </label>
