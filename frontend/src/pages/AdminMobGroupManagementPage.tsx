@@ -30,7 +30,7 @@ type MobGroup = {
   description: string | null
 }
 
-type Feedback = { type: 'success' | 'error'; message: string } | null
+type Feedback = { type: 'success' | 'error' | 'info'; message: string } | null
 
 type CreateMobGroupInput = {
   courseId: number
@@ -77,6 +77,9 @@ export function AdminMobGroupManagementPage() {
         name: variables.name,
         description: variables.description,
       }),
+    onMutate: () => {
+      setFeedback({ type: 'info', message: 'Creating mob group...' })
+    },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['course-mob-groups'] })
       setMobGroupName('')
@@ -91,6 +94,9 @@ export function AdminMobGroupManagementPage() {
   const assignUserToCourseMutation = useMutation({
     mutationFn: ({ userId, courseId }: { userId: number; courseId: number }) =>
       assignUserToCourse({ userId, courseId }),
+    onMutate: () => {
+      setFeedback({ type: 'info', message: 'Assigning user to course...' })
+    },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['admin-users'] })
       setFeedback({ type: 'success', message: 'User assigned to course successfully!' })
@@ -103,6 +109,9 @@ export function AdminMobGroupManagementPage() {
   const assignUserToMobGroupMutation = useMutation({
     mutationFn: ({ userId, mobGroupId }: { userId: number; mobGroupId: number }) =>
       assignUserToMobGroupNew({ userId, mobGroupId }),
+    onMutate: () => {
+      setFeedback({ type: 'info', message: 'Assigning user to mob group...' })
+    },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['admin-users'] })
       setFeedback({ type: 'success', message: 'User assigned to mob group successfully!' })
@@ -169,6 +178,8 @@ export function AdminMobGroupManagementPage() {
             className={`rounded-2xl px-4 py-3 text-sm font-medium ${
               feedback.type === 'success'
                 ? 'bg-emerald-500/10 text-emerald-400'
+                : feedback.type === 'info'
+                ? 'bg-sky-500/10 text-sky-300'
                 : 'bg-rose-500/10 text-rose-400'
             }`}
           >

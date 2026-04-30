@@ -27,11 +27,14 @@ export function MobGroupsManagement() {
   const [groups, setGroups] = useState(groupsData)
   const [editingGroupId, setEditingGroupId] = useState<number | null>(null)
   const [draftName, setDraftName] = useState('')
-  const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
+  const [feedback, setFeedback] = useState<{ type: 'success' | 'error' | 'info'; message: string } | null>(null)
 
   const renameMutation = useMutation({
     mutationFn: ({ groupId, name }: { groupId: number; name: string }) =>
       renameMobGroup(groupId, name) as Promise<RenameMobGroupResponse>,
+    onMutate: () => {
+      setFeedback({ type: 'info', message: 'Saving mob group name...' })
+    },
     onSuccess: (updatedGroup, variables) => {
       const nextName = updatedGroup.mobGroupName ?? updatedGroup.name ?? draftName.trim()
       setGroups((currentGroups) =>
@@ -75,7 +78,7 @@ export function MobGroupsManagement() {
         <h3 className="text-lg font-bold text-white">Current Mob Groups</h3>
 
         {feedback && (
-          <div className={`rounded-2xl px-4 py-3 text-sm font-medium ${feedback.type === 'success' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'}`}>
+          <div className={`rounded-2xl px-4 py-3 text-sm font-medium ${feedback.type === 'success' ? 'bg-emerald-500/10 text-emerald-400' : feedback.type === 'info' ? 'bg-sky-500/10 text-sky-300' : 'bg-rose-500/10 text-rose-400'}`}>
             {feedback.message}
           </div>
         )}
@@ -114,6 +117,7 @@ export function MobGroupsManagement() {
                     <button
                       onClick={cancelRenamingGroup}
                       type="button"
+                      disabled={renameMutation.isPending}
                       className="w-full rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white/70 hover:bg-white/10 sm:w-auto"
                     >
                       Cancel

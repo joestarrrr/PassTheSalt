@@ -4,12 +4,13 @@ import { assignUserToCourse, getAdminUsers, getCourses } from '../api.js'
 import type { Course } from '../types/course'
 import type { UserSummary } from '../types/user'
 
-type Feedback = { type: 'success' | 'error'; message: string } | null
+type Feedback = { type: 'success' | 'error' | 'info'; message: string } | null
 
 export function UserManagementPage() {
   const queryClient = useQueryClient()
   const [selectedCourseId, setSelectedCourseId] = useState('')
   const [feedback, setFeedback] = useState<Feedback>(null)
+  const [pendingAssignUserId, setPendingAssignUserId] = useState<number | null>(null)
 
   const coursesQuery = useQuery<Course[]>({
     queryKey: ['courses'],
@@ -24,12 +25,19 @@ export function UserManagementPage() {
   const assignCourseMutation = useMutation({
     mutationFn: ({ userId, courseId }: { userId: number; courseId: number }) =>
       assignUserToCourse({ userId, courseId }),
+    onMutate: (variables) => {
+      setPendingAssignUserId(variables.userId)
+      setFeedback({ type: 'info', message: 'Assigning user to course...' })
+    },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['admin-users'] })
       setFeedback({ type: 'success', message: 'User assigned to course successfully.' })
     },
     onError: (error) => {
       setFeedback({ type: 'error', message: error instanceof Error ? error.message : 'Failed to assign user to course.' })
+    },
+    onSettled: () => {
+      setPendingAssignUserId(null)
     },
   })
 
@@ -54,7 +62,7 @@ export function UserManagementPage() {
       </div>
 
         {feedback ? (
-          <div className={`rounded-2xl px-4 py-3 text-sm font-medium ${feedback.type === 'success' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'}`}>
+          <div className={`rounded-2xl px-4 py-3 text-sm font-medium ${feedback.type === 'success' ? 'bg-emerald-500/10 text-emerald-400' : feedback.type === 'info' ? 'bg-sky-500/10 text-sky-300' : 'bg-rose-500/10 text-rose-400'}`}>
             {feedback.message}
           </div>
         ) : null}
@@ -82,6 +90,7 @@ export function UserManagementPage() {
                   <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
                     <select
                       defaultValue={user.courseId ?? ''}
+                      disabled={assignCourseMutation.isPending && pendingAssignUserId === user.id}
                       onChange={(event) => {
                         const courseId = Number(event.target.value)
                         if (!courseId) {
@@ -92,6 +101,9 @@ export function UserManagementPage() {
                       }}
                       className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-white outline-none focus:border-violet-500 [color-scheme:dark] sm:w-auto"
                     >
+                      {assignCourseMutation.isPending && pendingAssignUserId === user.id ? (
+                        <option value="">Assigning...</option>
+                      ) : null}
                       <option value="">Assign course...</option>
                       {(coursesQuery.data ?? []).map((course) => (
                         <option key={course.id} value={course.id}>
