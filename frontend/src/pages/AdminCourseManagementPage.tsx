@@ -93,7 +93,7 @@ export function AdminCourseManagementPage() {
                     const withoutLeadingZeros = digitsOnly.replace(/^0+(?=\d)/, '')
                     setNumberOfDaysInput(withoutLeadingZeros)
                   }}
-                  className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/30"
+                  className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/30 [appearance:textfield] [color-scheme:dark]"
                 />
               </label>
 
