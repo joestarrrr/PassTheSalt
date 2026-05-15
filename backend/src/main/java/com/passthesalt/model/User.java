@@ -13,9 +13,6 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(unique = true)
-    private String clerkUserId;
-
     @Column(nullable = false)
     private String fullName;
 
@@ -61,13 +58,6 @@ public class User {
         this.email = email;
     }
 
-    public String getClerkUserId() {
-        return clerkUserId;
-    }
-
-    public void setClerkUserId(String clerkUserId) {
-        this.clerkUserId = clerkUserId;
-    }
 
     public String getFullName() {
         return fullName;

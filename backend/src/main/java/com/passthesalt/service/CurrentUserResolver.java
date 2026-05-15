@@ -1,72 +1,32 @@
 package com.passthesalt.service;
 
-import java.util.Objects;
+import java.util.List;
 
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.passthesalt.exception.UnauthorizedException;
 import com.passthesalt.model.User;
 import com.passthesalt.repository.UserRepository;
 
 @Service
 public class CurrentUserResolver {
     private final UserRepository userRepository;
-    private final ClerkUserService clerkUserService;
 
-    public CurrentUserResolver(UserRepository userRepository, ClerkUserService clerkUserService) {
+    public CurrentUserResolver(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.clerkUserService = clerkUserService;
     }
 
     @Transactional
-    public User resolve(Jwt jwt, String fallbackEmail) {
-        if (jwt == null) {
-            throw new UnauthorizedException("Missing authenticated Clerk session");
+    public User resolve() {
+        List<User> users = userRepository.findAll();
+        if (!users.isEmpty()) {
+            return users.get(0);
         }
 
-        ClerkUserService.ClerkUserProfile profile = clerkUserService.resolveProfile(jwt, fallbackEmail);
-
-        // Normalize role values (lowercase) and map legacy "student" role to "user"
-        String normalizedProfileRole = normalizeRole(profile.role());
-
-        User user = userRepository.findByClerkUserId(profile.clerkUserId())
-                .or(() -> userRepository.findByEmail(profile.email()))
-                .orElseGet(User::new);
-
-        if (user.getId() == null) {
-            user.setClerkUserId(profile.clerkUserId());
-            user.setEmail(profile.email());
-            user.setFullName(profile.fullName());
-            user.setRole(normalizedProfileRole != null ? normalizedProfileRole : "user");
-            return userRepository.save(user);
-        }
-
-        if (!Objects.equals(user.getClerkUserId(), profile.clerkUserId())) {
-            user.setClerkUserId(profile.clerkUserId());
-        }
-        if (!profile.email().equalsIgnoreCase(user.getEmail())) {
-            user.setEmail(profile.email());
-        }
-        if (profile.fullName() != null && !profile.fullName().isBlank() && !profile.fullName().equals(user.getFullName())) {
-            user.setFullName(profile.fullName());
-        }
-        // If DB has no role, prefer the profile role (normalized). Do not overwrite an explicit existing role,
-        // but ensure the stored role is normalized to lowercase if possible.
-        if ((user.getRole() == null || user.getRole().isBlank()) && normalizedProfileRole != null && !normalizedProfileRole.isBlank()) {
-            user.setRole(normalizedProfileRole);
-        } else if (user.getRole() != null && !user.getRole().isBlank()) {
-            user.setRole(normalizeRole(user.getRole()));
-        }
-
-        return userRepository.save(user);
-    }
-
-    private String normalizeRole(String role) {
-        if (role == null) return null;
-        String r = role.trim().toLowerCase();
-        if (r.equals("student")) return "user";
-        return r;
+        User defaultUser = new User();
+        defaultUser.setEmail("local.admin@passthesalt.dev");
+        defaultUser.setFullName("Local Admin");
+        defaultUser.setRole("admin");
+        return userRepository.save(defaultUser);
     }
 }

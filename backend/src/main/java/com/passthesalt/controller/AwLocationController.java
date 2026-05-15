@@ -6,8 +6,6 @@ import jakarta.validation.Valid;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.PutMapping;
 
 import com.passthesalt.dto.AwLocationDTO;
@@ -40,20 +37,14 @@ public class AwLocationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<AwLocationDTO>> getAwLocations(
-            @RequestParam Long courseId,
-            @AuthenticationPrincipal Jwt jwt,
-            @RequestHeader(value = "X-Clerk-Email", required = false) String clerkEmail) {
-        User currentUser = currentUserResolver.resolve(jwt, clerkEmail);
+    public ResponseEntity<List<AwLocationDTO>> getAwLocations(@RequestParam Long courseId) {
+        User currentUser = currentUserResolver.resolve();
         return ResponseEntity.ok(awLocationService.getAwLocations(courseId, currentUser));
     }
 
     @PostMapping
-    public ResponseEntity<AwLocationDTO> createAwLocation(
-            @Valid @RequestBody CreateAwLocationDTO request,
-            @AuthenticationPrincipal Jwt jwt,
-            @RequestHeader(value = "X-Clerk-Email", required = false) String clerkEmail) {
-        User currentUser = currentUserResolver.resolve(jwt, clerkEmail);
+    public ResponseEntity<AwLocationDTO> createAwLocation(@Valid @RequestBody CreateAwLocationDTO request) {
+        User currentUser = currentUserResolver.resolve();
         AwLocationDTO result = awLocationService.createAwLocation(request, currentUser);
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
@@ -61,47 +52,33 @@ public class AwLocationController {
     @PutMapping("/{locationId}")
     public ResponseEntity<AwLocationDTO> updateAwLocation(
             @PathVariable Long locationId,
-            @Valid @RequestBody UpdateAwLocationDTO request,
-            @AuthenticationPrincipal Jwt jwt,
-            @RequestHeader(value = "X-Clerk-Email", required = false) String clerkEmail) {
-        User currentUser = currentUserResolver.resolve(jwt, clerkEmail);
+            @Valid @RequestBody UpdateAwLocationDTO request) {
+        User currentUser = currentUserResolver.resolve();
         return ResponseEntity.ok(awLocationService.updateAwLocation(locationId, request, currentUser));
     }
 
     @PostMapping("/{locationId}/vote")
-    public ResponseEntity<AwLocationDTO> voteAwLocation(
-            @PathVariable Long locationId,
-            @AuthenticationPrincipal Jwt jwt,
-            @RequestHeader(value = "X-Clerk-Email", required = false) String clerkEmail) {
-        User currentUser = currentUserResolver.resolve(jwt, clerkEmail);
+    public ResponseEntity<AwLocationDTO> voteAwLocation(@PathVariable Long locationId) {
+        User currentUser = currentUserResolver.resolve();
         return ResponseEntity.ok(awLocationService.voteAwLocation(locationId, currentUser));
     }
 
     @DeleteMapping("/{locationId}/vote")
-    public ResponseEntity<AwLocationDTO> removeAwVote(
-            @PathVariable Long locationId,
-            @AuthenticationPrincipal Jwt jwt,
-            @RequestHeader(value = "X-Clerk-Email", required = false) String clerkEmail) {
-        User currentUser = currentUserResolver.resolve(jwt, clerkEmail);
+    public ResponseEntity<AwLocationDTO> removeAwVote(@PathVariable Long locationId) {
+        User currentUser = currentUserResolver.resolve();
         return ResponseEntity.ok(awLocationService.removeAwVote(locationId, currentUser));
     }
 
     @DeleteMapping("/{locationId}")
-    public ResponseEntity<Void> deleteAwLocation(
-            @PathVariable Long locationId,
-            @AuthenticationPrincipal Jwt jwt,
-            @RequestHeader(value = "X-Clerk-Email", required = false) String clerkEmail) {
-        User currentUser = currentUserResolver.resolve(jwt, clerkEmail);
+    public ResponseEntity<Void> deleteAwLocation(@PathVariable Long locationId) {
+        User currentUser = currentUserResolver.resolve();
         awLocationService.deleteAwLocation(locationId, currentUser);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/winner")
-    public ResponseEntity<AwLocationDTO> getWinner(
-            @RequestParam Long courseId,
-            @AuthenticationPrincipal Jwt jwt,
-            @RequestHeader(value = "X-Clerk-Email", required = false) String clerkEmail) {
-        User currentUser = currentUserResolver.resolve(jwt, clerkEmail);
+    public ResponseEntity<AwLocationDTO> getWinner(@RequestParam Long courseId) {
+        User currentUser = currentUserResolver.resolve();
         AwLocationDTO winner = awLocationService.getWinningAwLocation(courseId, currentUser);
         return winner != null ? ResponseEntity.ok(winner) : ResponseEntity.noContent().build();
     }
