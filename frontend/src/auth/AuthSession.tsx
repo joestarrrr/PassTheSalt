@@ -1,16 +1,13 @@
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { createContext, useContext, useEffect, useMemo, type ReactNode } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { useAuth, useUser } from '@clerk/clerk-react'
 import { router } from '../router/appRouter'
 import { getCurrentUser } from '../api.js'
-import { clearSessionToken, setSessionToken } from './sessionToken'
 import { getRoleHome, normalizeRole } from './roleRoutes'
 import type { BackendUser } from '../types/auth'
 
 type AuthSessionValue = {
   isClerkLoaded: boolean
   isSignedIn: boolean
-  clerkEmail: string
   backendUser: BackendUser | null
   backendError: string | null
   authToken: string
@@ -37,87 +34,21 @@ function normalizeBackendUser(user: BackendUser | null): BackendUser | null {
 }
 
 export function AuthSessionProvider({ children }: { children: ReactNode }) {
-  const { isLoaded, isSignedIn, getToken } = useAuth()
-  const { user } = useUser()
-  const clerkEmail = user?.primaryEmailAddress?.emailAddress?.trim() ?? ''
-  const [authToken, setAuthToken] = useState('')
-
-  useEffect(() => {
-    let cancelled = false
-    let intervalId: number | undefined
-
-    if (!isLoaded) {
-      return () => {
-        cancelled = true
-        if (intervalId) {
-          window.clearInterval(intervalId)
-        }
-      }
-    }
-
-    if (!isSignedIn) {
-      clearSessionToken()
-      setAuthToken('')
-      return () => {
-        cancelled = true
-        if (intervalId) {
-          window.clearInterval(intervalId)
-        }
-      }
-    }
-
-    if (authToken) {
-      return () => {
-        cancelled = true
-      }
-    }
-
-    const syncToken = async () => {
-      const token = await getToken()
-
-      if (cancelled) {
-        return
-      }
-
-      const nextToken = token?.trim() ?? ''
-      if (!nextToken) {
-        return
-      }
-
-      setAuthToken(nextToken)
-      setSessionToken(nextToken)
-
-      if (intervalId) {
-        window.clearInterval(intervalId)
-      }
-    }
-
-    void syncToken()
-    intervalId = window.setInterval(() => {
-      void syncToken()
-    }, 800)
-
-    return () => {
-      cancelled = true
-      if (intervalId) {
-        window.clearInterval(intervalId)
-      }
-    }
-  }, [authToken, getToken, isLoaded, isSignedIn])
-
   const currentUserQuery = useQuery<BackendUser>({
-    queryKey: ['current-user', authToken],
-    queryFn: () => getCurrentUser(authToken, clerkEmail) as Promise<BackendUser>,
-    enabled: isLoaded && isSignedIn && Boolean(authToken),
+    queryKey: ['current-user'],
+    queryFn: () => getCurrentUser() as Promise<BackendUser>,
     retry: 2,
     retryDelay: 750,
   })
 
   const backendUser = normalizeBackendUser(currentUserQuery.data ?? null)
   const backendError = currentUserQuery.error instanceof Error ? currentUserQuery.error.message : null
+  const isLoaded = true
+  const isSignedIn = Boolean(backendUser)
+  const authToken = ''
 
   useEffect(() => {
-    if (!isLoaded || !isSignedIn || !backendUser?.role) {
+    if (!backendUser?.role) {
       return
     }
 
@@ -129,32 +60,16 @@ export function AuthSessionProvider({ children }: { children: ReactNode }) {
         void router.navigate({ to: redirectTo })
       }
     }
-  }, [backendUser?.role, isLoaded, isSignedIn])
-
-  useEffect(() => {
-    if (!isLoaded) {
-      return
-    }
-
-    if (!isSignedIn) {
-      clearSessionToken()
-      return
-    }
-
-    if (authToken) {
-      setSessionToken(authToken)
-    }
-  }, [authToken, isLoaded, isSignedIn])
+  }, [backendUser?.role])
 
   const value = useMemo<AuthSessionValue>(
     () => ({
       isClerkLoaded: isLoaded,
-      isSignedIn: Boolean(isSignedIn),
-      clerkEmail,
+      isSignedIn,
       backendUser,
       backendError,
       authToken,
-      isReady: isLoaded && (!isSignedIn || currentUserQuery.isSuccess || currentUserQuery.isError),
+      isReady: !currentUserQuery.isLoading,
       refreshBackendUser: () => {
         void currentUserQuery.refetch()
       },
@@ -163,11 +78,9 @@ export function AuthSessionProvider({ children }: { children: ReactNode }) {
       authToken,
       backendError,
       backendUser,
-      clerkEmail,
       currentUserQuery.isError,
-      currentUserQuery.isSuccess,
+      currentUserQuery.isLoading,
       currentUserQuery.refetch,
-      isLoaded,
       isSignedIn,
     ],
   )

@@ -1,5 +1,3 @@
-import { getSessionToken } from './auth/sessionToken.ts'
-
 const DEFAULT_PROD_BACKEND_URL = 'https://passthesalt-production.up.railway.app'
 const IS_LOCAL_HOST =
   typeof window !== 'undefined' &&
@@ -41,33 +39,11 @@ async function parseResponse(response, fallbackMessage) {
   return null
 }
 
-function getAuthToken() {
-  return getSessionToken()
-}
-
-function requireAuthToken() {
-  const token = getAuthToken()
-  if (!token) {
-    throw new Error('Missing auth session. Sign in with Clerk to continue.')
-  }
-
-  return token
-}
-
-function withAuthHeaders(headers = {}) {
-  const token = requireAuthToken()
-
-  return {
-    ...headers,
-    Authorization: `Bearer ${token}`,
-  }
-}
-
 function authFetch(input, init = {}) {
   const url = getApiUrl(input)
   return fetch(url, {
     ...init,
-    headers: withAuthHeaders(init.headers || {}),
+    headers: init.headers || {},
   })
 }
 
@@ -247,14 +223,9 @@ export const getUserCourseContext = async (userId) => {
   return parseResponse(response, 'Failed to load user course context')
 }
 
-export const getCurrentUser = async (authToken, clerkEmail = '') => {
+export const getCurrentUser = async () => {
   const url = getApiUrl('/api/auth/me')
-  const response = await fetch(url, {
-    headers: {
-      Authorization: `Bearer ${authToken}`,
-      ...(clerkEmail ? { 'X-Clerk-Email': clerkEmail } : {}),
-    },
-  })
+  const response = await fetch(url)
 
   if (response.ok) {
     return parseResponse(response, 'Failed to load current user')

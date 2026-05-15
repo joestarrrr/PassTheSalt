@@ -1,5 +1,4 @@
 import { Link } from '@tanstack/react-router'
-import { useAuth } from '@clerk/clerk-react'
 
 const features = [
   { icon: '📝', label: 'Daily Retros' },
@@ -11,27 +10,6 @@ const features = [
 ]
 
 export function LandingPage() {
-  const { isSignedIn, isLoaded } = useAuth()
-
-  // If Clerk has loaded and user is already signed in, show a loading state
-  // while AuthSession fetches the backend user and then navigates to role home.
-  if (isLoaded && isSignedIn) {
-    return (
-      <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#0c0618]">
-        <div className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="absolute -left-48 -top-48 h-[600px] w-[600px] rounded-full bg-violet-900/40 blur-[130px]" />
-          <div className="absolute -right-32 bottom-0 h-[400px] w-[400px] rounded-full bg-fuchsia-900/25 blur-[110px]" />
-        </div>
-        <div className="relative z-10 flex flex-col items-center gap-4 text-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-600 shadow-lg shadow-violet-500/40">
-            <span className="text-base font-black text-white">PS</span>
-          </div>
-          <span className="h-5 w-5 animate-spin rounded-full border-2 border-white/15 border-t-violet-400" />
-          <p className="max-w-xs text-sm font-medium text-white/55">Loading your workspace...</p>
-        </div>
-      </div>
-    )
-  }
 
   return (
     <main className="relative flex min-h-screen flex-col overflow-hidden bg-[#0c0618]">
